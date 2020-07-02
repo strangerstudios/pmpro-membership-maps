@@ -66,6 +66,7 @@ function pmpromm_shortcode( $atts ){
 
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'marker_data', $marker_data );
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'zoom_level', $zoom );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'infowindow_classes', pmpromm_get_element_class( 'pmpromm_infowindow' ) );
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );		
 
@@ -227,11 +228,11 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$member_array['marker_meta'] = $member;
 
 			if( !empty( $pmpro_pages['profile'] ) ) {
-				$profile_url = apply_filters( 'pmpromd_profile_url', get_permalink( $pmpro_pages['profile'] ) );
+				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );
 			}
 
 			$name_content = "";
-			$name_content .= '<h3 class="pmpromm_display-name">';
+			$name_content .= '<h3 class="'.pmpromm_get_element_class( 'pmpromm_display-name' ).'">';
 				if( !empty( $link ) && !empty( $profile_url ) ) {
 					$name_content .= '<a href="'.add_query_arg( 'pu', $member['user_nicename'], $profile_url ).'">'.$member['display_name'].'</a>';
 				} else {
@@ -243,18 +244,18 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$avatar_content = "";
 			if( $show_avatar ){
 				$avatar_align = ( !empty( $marker_attributes['avatar_align'] ) ) ? $marker_attributes['avatar_align'] : "";
-				$avatar_content .= '<div class="pmpromm_avatar">';
+				$avatar_content .= '<div class="'.pmpromm_get_element_class( 'pmpromm_avatar' ).'">';
 					if( !empty( $marker_attributes['link'] ) && !empty( $profile_url ) ) {
-						$avatar_content .= '<a class="'.$avatar_align.'" href="'.add_query_arg('pu', $member['user_nicename'], $profile_url).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</a>';
+						$avatar_content .= '<a class="'.pmpromm_get_element_class( $avatar_align ).'" href="'.add_query_arg('pu', $member['user_nicename'], $profile_url).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</a>';
 					} else {
-						$avatar_content .= '<span class="'.$avatar_align.'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</span>';
+						$avatar_content .= '<span class="'.pmpromm_get_element_class( $avatar_align ).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</span>';
 					}
 				$avatar_content .= '</div>';
 			}
 
 			$email_content = "";
 			if( $show_email ){
-				$email_content .= '<p class="pmpromm_email">';
+				$email_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_email' ).'">';
 					$email_content .= '<strong>'.__( 'Email Address', 'pmpro-membership-maps' ).'</strong>&nbsp;';
 					$email_content .= $member['user_email'];
 				$email_content .= '</p>';						
@@ -262,7 +263,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$level_content = "";
 			if( $show_level ){
-				$level_content .= '<p class="pmpromm_level">';
+				$level_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_level' ).'">';
 				$level_content .= '<strong>'.__('Level', 'pmpro-membership-maps').'</strong>&nbsp;';
 				$level_content .= $member['membership'];
 				$level_content .= '</p>';
@@ -270,7 +271,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$startdate_content = "";
 			if( $show_startdate ){
-				$startdate_content .= '<p class="pmpromm_date">';
+				$startdate_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_date' ).'">';
 				$startdate_content .= '<strong>'.__('Start Date', 'pmpro-membership-maps').'</strong>&nbsp;';
 				$startdate_content .= date( get_option("date_format"), $member['joindate'] );
 				$startdate_content .= '</p>';
@@ -279,7 +280,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$profile_content = "";
 			if( !empty( $link ) && !empty( $profile_url ) ) {
-				$profile_content .= '<p class="pmpromm_profile"><a href="'.add_query_arg( 'pu', $member['user_nicename'], $profile_url ).'">'.apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ).'</a></p>';
+				$profile_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_profile' ).'"><a href="'.add_query_arg( 'pu', $member['user_nicename'], $profile_url ).'">'.apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ).'</a></p>';
 			}
 
 			$rhfield_content = "";
@@ -298,7 +299,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 					if( !empty( $member[$field[1]] ) ){
 						
-						$rhfield_content .= '<p class="pmpromm_'.$field[1].'">';
+						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$field[1] ).'">';
 								
 						if( is_array( $meta_field ) && !empty( $meta_field['filename'] ) ){
 							//this is a file field
@@ -491,7 +492,7 @@ function pmpromm_display_file_field( $meta_field ) {
 		case 'image/jpeg':
 		case 'image/png':
 		case 'image/gif':
-			return '<a href="' . $meta_field['fullurl'] . '" title="' . $meta_field['filename'] . '" target="_blank"><img class="subtype-' . $meta_field_file_type['ext'] . '" src="' . $meta_field['fullurl'] . '"><span class="pmpromd_filename">' . $meta_field['filename'] . '</span></a>'; break;
+			return '<a href="' . $meta_field['fullurl'] . '" title="' . $meta_field['filename'] . '" target="_blank"><img class="subtype-' . $meta_field_file_type['ext'] . '" src="' . $meta_field['fullurl'] . '"><span class="'.pmpromm_get_element_class( 'pmpromm_filename' ).'">' . $meta_field['filename'] . '</span></a>'; break;
 	case 'video/mpeg':
 	case 'video/mp4':
 		return do_shortcode('[video src="' . $meta_field['fullurl'] . '"]'); break;
@@ -499,7 +500,7 @@ function pmpromm_display_file_field( $meta_field ) {
 	case 'audio/wav':
 		return do_shortcode('[audio src="' . $meta_field['fullurl'] . '"]'); break;
 	default:
-		return '<a href="' . $meta_field['fullurl'] . '" title="' . $meta_field['filename'] . '" target="_blank"><img class="subtype-' . $meta_field_file_type['ext'] . '" src="' . wp_mime_type_icon($meta_field_file_type['type']) . '"><span class="pmpromd_filename">' . $meta_field['filename'] . '</span></a>'; break;
+		return '<a href="' . $meta_field['fullurl'] . '" title="' . $meta_field['filename'] . '" target="_blank"><img class="subtype-' . $meta_field_file_type['ext'] . '" src="' . wp_mime_type_icon($meta_field_file_type['type']) . '"><span class="'.pmpromm_get_element_class( 'pmpromm_filename' ).'">' . $meta_field['filename'] . '</span></a>'; break;
 	}
 }
 

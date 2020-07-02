@@ -34,7 +34,7 @@ jQuery(document).ready(function(){
 
 			var latlng = { lat: parseFloat( marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( marker_data[i]['marker_meta']['lng'] ) };
 
-			var contentString = '<div id="pmpro_infowindow_'+i+'" class="pmpromm_infowindow" style="width: 100%; max-width: '+infowindow_width+'px;">'+
+			var contentString = '<div id="pmpro_infowindow_'+i+'" class="'+infowindow_classes+'" style="width: 100%; max-width: '+infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
 				marker_data[i]['marker_content']+
 				'</div>'+

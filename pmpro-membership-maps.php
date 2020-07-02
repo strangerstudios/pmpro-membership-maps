@@ -224,7 +224,8 @@ function pmpro_memmaps_build_markers( $members, $marker_attributes ){
 			$member_array = array();
 
 			$member_array['ID'] = $member['ID'];
-			$member_array['marker_meta'] = $member;
+			$member_array['marker_meta']['lat'] = $member['lat'];
+			$member_array['marker_meta']['lng'] = $member['lng'];
 
 			if( !empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromd_profile_url', get_permalink( $pmpro_pages['profile'] ) );

@@ -10,14 +10,14 @@ jQuery(document).ready(function(){
 	if( override_first_marker_location === true ){
 		var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };		
 	} else {
+		//If there isn't any markers, then use our default or override with the pmpromm_default_map_start filter
+		var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };
 		//Else, use the first marker that's loaded as the starting point
 		if( typeof marker_data !== 'undefined' && marker_data.length > 0 ){
-			var map_start = { lat: parseFloat( marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( marker_data[0]['marker_meta']['lng'] ) };
-		} else {
-			//If there isn't any markers, then use our default or override with the pmpromm_default_map_start filter
-			var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };
+			if( marker_data[0]['marker_meta']['lat'] !== null ){
+				var map_start = { lat: parseFloat( marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( marker_data[0]['marker_meta']['lng'] ) };
+			}
 		}
-	}
 
 	//Initiating the map
 	var pmpro_map = new google.maps.Map( map_element, {

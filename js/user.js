@@ -1,6 +1,6 @@
 jQuery(document).ready(function(){
 
-	var map_element = document.getElementById( 'pmpro_memmaps_map' );
+	var map_element = document.getElementById( 'pmpromm_map' );
 
 	if( typeof map_element === 'undefined' ){
 		return;
@@ -14,7 +14,7 @@ jQuery(document).ready(function(){
 		if( typeof marker_data !== 'undefined' && marker_data.length > 0 ){
 			var map_start = { lat: parseFloat( marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( marker_data[0]['marker_meta']['lng'] ) };
 		} else {
-			//If there isn't any markers, then use our default or override with the pmpro_memmaps_default_map_start filter
+			//If there isn't any markers, then use our default or override with the pmpromm_default_map_start filter
 			var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };
 		}
 	}
@@ -34,7 +34,7 @@ jQuery(document).ready(function(){
 
 			var latlng = { lat: parseFloat( marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( marker_data[i]['marker_meta']['lng'] ) };
 
-			var contentString = '<div id="pmpro_infowindow_'+i+'" class="pmpro_memmaps_infowindow" style="width: 100%; max-width: '+infowindow_width+'px;">'+
+			var contentString = '<div id="pmpro_infowindow_'+i+'" class="'+infowindow_classes+'" style="width: 100%; max-width: '+infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
 				marker_data[i]['marker_content']+
 				'</div>'+

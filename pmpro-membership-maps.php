@@ -16,7 +16,6 @@ function pmpromm_shortcode( $atts ){
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
 		'zoom'			=> '8',
-		'notice'		=> apply_filters( 'pmpromm_default_map_notice', __( "This map could not be loaded. Please ensure that you've entered in your Google Maps API Key, and that there are no JavaScript errors on the page.", "pmpro-membership-maps" ) ),
 		'ID'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
@@ -41,6 +40,9 @@ function pmpromm_shortcode( $atts ){
 		'avatar_align'		=> $avatar_align,
 		'fields'			=> $fields
 	) );
+
+	$notice = apply_filters( 'pmpromm_default_map_notice', __( "This map could not be loaded. Please ensure that you've entered in your Google Maps API Key, and that there are no JavaScript errors on the page.", "pmpro-membership-maps" ) );
+	
 	//Get the marker data
 	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes);	
 
@@ -225,7 +227,8 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$member_array = array();
 
 			$member_array['ID'] = $member['ID'];
-			$member_array['marker_meta'] = $member;
+			$member_array['marker_meta']['lat'] = $member['lat'];
+			$member_array['marker_meta']['lng'] = $member['lng'];
 
 			if( !empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );

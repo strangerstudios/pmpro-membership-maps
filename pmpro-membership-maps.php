@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Membership Maps
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-membership-maps/
  * Description: Adds a map to your member directory and profile page.
- * Version: .1
+ * Version: 0.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-membership-maps
@@ -430,14 +430,27 @@ function pmpromm_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-membership-maps.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('#')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('#')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>', /// To be updated.
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-membership-maps' ) ) . '">' . __( 'Support', 'pmpro-membership-maps' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
 	}
 	return $links;
 }
 add_filter('plugin_row_meta', 'pmpromm_plugin_row_meta', 10, 2);
+
+/**
+ * Add 'settings' to plugin action links.
+ */
+function pmpromm_add_action_links( $action_links ) {
+
+	$pmpromm_links = array( 
+		'<a href="' . esc_url( admin_url() . 'admin.php?page=pmpro-advancedsettings' ) . '" title="' . esc_attr( __( 'View Settings', 'pmpro-membership-maps' ) ) . '">' . __( 'API Settings', 'pmpro-membership-maps' ) . '</a>'
+	);
+	return array_merge( $pmpromm_links, $action_links );
+}
+add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'pmpromm_add_action_links' );
+
 
 //Load text domain
 function pmpromm_load_textdomain() {

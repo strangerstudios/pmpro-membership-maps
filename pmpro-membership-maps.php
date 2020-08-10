@@ -449,23 +449,23 @@ function pmpromm_load_textdomain() {
 add_action( 'plugins_loaded', 'pmpromm_load_textdomain' );
 
 //Show map on directory page
-function pmpromm_load_map_directory_page( $sqlQuery, $avatar_size, $fields, $layout, $level, $levels, $limit, $link, $order_by, $order, $show_avatar, $show_email, $show_level, $show_search, $show_startdate, $avatar_align ){
+function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 
 	$attributes = array(
-		'link' => $link,
-		'avatar_size' => $avatar_size,
-		'show_avatar' => $show_avatar,
-		'show_email' => $show_email,
-		'show_level' => $show_level,
-		'show_startdate' => $show_startdate,
-		'avatar_align' => $avatar_align,
-		'fields' => $fields,
+		'link' => $atts['link'],
+		'avatar_size' => $atts['avatar_size'] ,
+		'show_avatar' => $atts['show_avatar'] ,
+		'show_email' => $atts['show_email'] ,
+		'show_level' => $atts['show_level'] ,
+		'show_startdate' => $atts['show_startdate'] ,
+		'avatar_align' => $atts['avatar_align'] ,
+		'fields' => $atts['fields'] ,
 	);
 
 	echo pmpromm_shortcode( $attributes );
 
 }
-add_action( 'pmpromm_before', 'pmpromm_load_map_directory_page', 10, 16 );
+add_action( 'pmpromm_before', 'pmpromm_load_map_directory_page', 10, 2 );
 
 //If we're on the profile page, only show that member's marker
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){

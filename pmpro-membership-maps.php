@@ -16,7 +16,6 @@ function pmpro_memmaps_shortcode( $atts ){
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
 		'zoom'			=> '8',
-		'notice'		=> apply_filters( 'pmpro_memmaps_default_map_notice', __( "This map could not be loaded. Please ensure that you've entered in your Google Maps API Key, and that there are no JavaScript errors on the page.", "pmpro-membership-maps" ) ),
 		'ID'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
@@ -41,6 +40,9 @@ function pmpro_memmaps_shortcode( $atts ){
 		'avatar_align'		=> $avatar_align,
 		'fields'			=> $fields
 	) );
+
+	$notice = apply_filters( 'pmpro_memmaps_default_map_notice', __( "This map could not be loaded. Please ensure that you've entered in your Google Maps API Key, and that there are no JavaScript errors on the page.", "pmpro-membership-maps" ) );
+	
 	//Get the marker data
 	$marker_data = pmpro_memmaps_load_marker_data( $levels, $marker_attributes);	
 

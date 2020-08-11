@@ -1,0 +1,3 @@
+#Items to ignore when exporting to zip.
+
+.github export-ignore

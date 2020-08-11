@@ -18,7 +18,8 @@ jQuery(document).ready(function(){
 				var map_start = { lat: parseFloat( marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( marker_data[0]['marker_meta']['lng'] ) };
 			}
 		}
-
+	}
+	
 	//Initiating the map
 	var pmpro_map = new google.maps.Map( map_element, {
 		center: map_start,

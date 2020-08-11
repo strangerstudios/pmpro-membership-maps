@@ -9,7 +9,11 @@ Adds a map to your member directory and profile page when using the Member Direc
 
 == Description ==
 
-Adds a map to your member directory and profile page when using the Member Directory and Profile Pages Add On for Paid Membership Pro.
+Adds a map to your member directory and profile page when using the [Member Directory and Profile Pages Add On](https://www.paidmembershipspro.com/add-ons/member-directory/) for Paid Membership Pro.
+
+= Official Paid Memberships Pro Add On =
+
+This is an official Add On for [Paid Memberships Pro](https://www.paidmembershipspro.com), the most complete member management and membership subscriptions plugin for WordPress.
 
 == Installation ==
 
@@ -29,5 +33,5 @@ Please visit our premium support site at https://www.paidmembershipspro.com for 
 
 == Changelog ==
 
-= .1 =
+= 0.1 =
 * Initial commit.

@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg?style=flat-square)
 
 ### Welcome to the Paid Memberships Pro Membership Maps GitHub Repository
-Add a description of the product here.
+Adds a map to your member directory and profile page when using the [Member Directory and Profile Pages Add On](https://www.paidmembershipspro.com/add-ons/member-directory/) for Paid Membership Pro.
 
 For more information please visit [paidmembershipspro.com](https://www.paidmembershipspro.com)
 

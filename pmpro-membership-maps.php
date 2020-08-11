@@ -379,8 +379,8 @@ function pmpromm_after_checkout( $user_id, $morder ){
 
 	if( is_array( $coordinates ) ){
 		if( !empty( $coordinates['lat'] ) && !empty( $coordinates['lng'] ) ){
-			update_user_meta( $user_id, 'pmpro_lat', $lat );
-			update_user_meta( $user_id, 'pmpro_lng', $lng );
+			update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
+			update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
 		}
 	}		
 
@@ -531,7 +531,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 				$lat = $request_body->results[0]->geometry->location->lat;
 				$lng = $request_body->results[0]->geometry->location->lng;				
 
-				do_action( 'pmpromm_geocode_response', $request_body, $user_id, $morder );
+				do_action( 'pmpromm_geocode_response', $request_body, $morder );
 
 				return apply_filters( 'pmpromm_geocode_return_array', array( 'lat' => $lat, 'lng' => $lng ), $request_body, $user_id );
 

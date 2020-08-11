@@ -533,7 +533,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 
 				do_action( 'pmpromm_geocode_response', $request_body, $morder );
 
-				return apply_filters( 'pmpromm_geocode_return_array', array( 'lat' => $lat, 'lng' => $lng ), $request_body, $user_id );
+				return apply_filters( 'pmpromm_geocode_return_array', array( 'lat' => $lat, 'lng' => $lng ), $request_body, $addr_array, $morder );
 
 			}
 

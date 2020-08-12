@@ -475,6 +475,34 @@ add_filter( 'pmpro_membership_maps_sql_parts', 'pmpromm_load_profile_map_marker'
 //Adds the map to the profile page
 function pmpromm_show_single_map_profile( $pu ){
 
+	if( !empty( $pu->ID ) ){
+
+		$lat = get_user_meta( $pu->ID, 'pmpro_lat', true );
+		$lng = get_user_meta( $pu->ID, 'pmpro_lng', true );
+		$baddress1 = get_user_meta( $pu->ID, 'pmpro_baddress1', true );
+
+		if( ( empty( $lat ) || empty( $lng ) ) && !empty( $baddress1 ) ){
+			//Coordinates are empty but address isn't, lets try geocode
+			
+			$member_address = array(
+				'street' 	=> $baddress1 .' '. get_user_meta( $pu->ID, 'pmpro_baddress2', true ),
+				'city' 		=> get_user_meta( $pu->ID, 'pmpro_bcity', true ),
+				'state' 	=> get_user_meta( $pu->ID, 'pmpro_bstate', true ),
+				'zip' 		=> get_user_meta( $pu->ID, 'pmpro_bzipcode', true )
+			);
+			$member_address = apply_filters( 'pmpromm_single_map_address_geocode', $member_address, $pu );
+
+			$coordinates = pmpromm_geocode_address( $member_address );	
+
+			if( is_array( $coordinates ) ){
+				update_user_meta( $pu->ID, 'pmpro_lat', $coordinates['lat'] );
+				update_user_meta( $pu->ID, 'pmpro_lng', $coordinates['lng'] );
+			}
+
+		}
+		
+	}
+
 	echo do_shortcode( '[membership_maps]' );
 
 }

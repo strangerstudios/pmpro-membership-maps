@@ -375,36 +375,14 @@ function pmpromm_after_checkout( $user_id, $morder ){
 
 	$address_string = implode( ", ", array_filter( $member_address ) );	
 
-	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
-		array( 'body' => array(
-			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
-			'address' 	=> $address_string
-		) ) 
-	);
+	$coordinates = pmpromm_geocode_address( $member_address, $morder );
 
-	if( !is_wp_error( $remote_request ) ){
-
-		$request_body = wp_remote_retrieve_body( $remote_request );
-
-		$request_body = json_decode( $request_body );
-
-		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
-
-			if( !empty( $request_body->results[0] ) ){
-
-				$lat = $request_body->results[0]->geometry->location->lat;
-				$lng = $request_body->results[0]->geometry->location->lng;
-
-				update_user_meta( $user_id, 'pmpro_lat', $lat );
-				update_user_meta( $user_id, 'pmpro_lng', $lng );
-
-				do_action( 'pmpromm_geocode_response', $request_body, $user_id, $morder );
-
-			}
-
+	if( is_array( $coordinates ) ){
+		if( !empty( $coordinates['lat'] ) && !empty( $coordinates['lng'] ) ){
+			update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
+			update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
 		}
-
-	}
+	}		
 
 }
 add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
@@ -527,4 +505,40 @@ function pmpromm_get_element_class( $class, $element = null ){
 	}
 
 	return $class;
+}
+
+function pmpromm_geocode_address( $addr_array, $morder = false ){
+
+	$address_string = implode( ", ", array_filter( $addr_array ) );	
+
+	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
+		array( 'body' => array(
+			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
+			'address' 	=> $address_string
+		) ) 
+	);
+
+	if( !is_wp_error( $remote_request ) ){
+
+		$request_body = wp_remote_retrieve_body( $remote_request );
+
+		$request_body = json_decode( $request_body );
+
+		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
+
+			if( !empty( $request_body->results[0] ) ){
+
+				$lat = $request_body->results[0]->geometry->location->lat;
+				$lng = $request_body->results[0]->geometry->location->lng;				
+
+				do_action( 'pmpromm_geocode_response', $request_body, $morder );
+
+				return apply_filters( 'pmpromm_geocode_return_array', array( 'lat' => $lat, 'lng' => $lng ), $request_body, $addr_array, $morder );
+
+			}
+
+		}
+
+	}
+
 }

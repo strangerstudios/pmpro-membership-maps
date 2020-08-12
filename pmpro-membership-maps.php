@@ -565,8 +565,44 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 
 			}
 
+		} else {
+
+			pmpromm_report_geocode_api_error( $request_body );
+
 		}
 
 	}
 
+}
+
+function pmpromm_report_geocode_api_error( $response ){
+
+	if( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ( defined( 'PMPROMM_DEBUG' ) && PMPROMM_DEBUG )  ){
+
+		if( !empty( $response->error_message ) ){
+
+			$to = get_bloginfo( 'admin_email' );
+
+			if( defined( 'PMPROMM_DEBUG_EMAIL' ) && PMPROMM_DEBUG_EMAIL !== "" ){
+				$to = PMPROMM_DEBUG_EMAIL;
+			}
+
+			$subj = sprintf( __('Paid Memberships Pro - Membership Maps: An Error Occurred - %s', 'pmpro-membership-maps' ), current_time( 'mysql') );
+			
+			$error = $response->status .': '. $response->error_message;
+
+			if( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ){
+				error_log( "Paid Memberships Pro - Membership Maps: ".$error );
+			}
+
+			$mail_error = apply_filters( 'pmpromm_enable_geocode_error_email', true );
+
+			if( $mail_error ){
+				wp_mail( $to, $subj, $error );
+			}
+		
+		}
+
+	}
+	
 }

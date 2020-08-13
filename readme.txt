@@ -1,15 +1,15 @@
 === Paid Memberships Pro - Member Directory Maps Add On ===
 Contributors: strangerstudios
-Tags: paid memberships pro, pmpro, map, 
+Tags: paid memberships pro, pmpro, map 
 Requires at least: 3.5
-Tested up to: 5.1.1
-Stable tag: .4
+Tested up to: 5.5
+Stable tag: 0.1
 
 Adds a map to your member directory and profile page when using the Member Directory and Profile Pages Add On for Paid Membership Pro.
 
 == Description ==
 
-Adds a map to your member directory and profile page when using the [Member Directory and Profile Pages Add On](https://www.paidmembershipspro.com/add-ons/member-directory/) for Paid Membership Pro.
+Adds a map to your member directory and profile page when using the [Member Directory and Profile Pages Add On](https://www.paidmembershipspro.com/add-ons/member-directory/#membership-maps) for Paid Membership Pro.
 
 = Official Paid Memberships Pro Add On =
 

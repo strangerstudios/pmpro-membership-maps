@@ -9,7 +9,7 @@ Adds a map to your member directory and profile page when using the [Member Dire
 For more information please visit [paidmembershipspro.com](https://www.paidmembershipspro.com)
 
 ## Installation ##
-For detailed installation steps, visit the our [documentation](https://www.paidmembershipspro.com) page.
+For detailed installation steps, visit the our [documentation](https://www.paidmembershipspro.com/add-ons/member-directory/#membership-maps) page.
 
 1. Download the current development ZIP file directly: `https://github.com/strangerstudios/pmpro-membership-maps/archive/dev.zip`
 

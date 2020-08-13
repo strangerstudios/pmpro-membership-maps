@@ -1,69 +1,69 @@
 jQuery(document).ready(function(){
 
-	var map_element = document.getElementById( 'pmpromm_map' );
+	var pmpromm_map_element = document.getElementById( 'pmpromm_map' );
 
-	if( typeof map_element === 'undefined' ){
+	if( typeof pmpromm_map_element === 'undefined' ){
 		return;
 	}
 
 	//Set your own start location for a map
-	if( override_first_marker_location === true ){
-		var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };		
+	if( pmpromm_override_first_marker_location === true ){
+		var pmpromm_map_start = { lat: parseFloat( pmpromm_default_start['lat'] ), lng: parseFloat( pmpromm_default_start['lng'] ) };		
 	} else {
-		//If there isn't any markers, then use our default or override with the pmpromm_default_map_start filter
-		var map_start = { lat: parseFloat( default_start['lat'] ), lng: parseFloat( default_start['lng'] ) };
-		//Else, use the first marker that's loaded as the starting point
-		if( typeof marker_data !== 'undefined' && marker_data.length > 0 ){
-			if( marker_data[0]['marker_meta']['lat'] !== null ){
-				var map_start = { lat: parseFloat( marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( marker_data[0]['marker_meta']['lng'] ) };
+		//If there isn't any pmpromm_markers, then use our default or override with the pmpromm_default_pmpromm_map_start filter
+		var pmpromm_map_start = { lat: parseFloat( pmpromm_default_start['lat'] ), lng: parseFloat( pmpromm_default_start['lng'] ) };
+		//Else, use the first pmpromm_marker that's loaded as the starting point
+		if( typeof pmpromm_marker_data !== 'undefined' && pmpromm_marker_data.length > 0 ){
+			if( pmpromm_marker_data[0]['marker_meta']['lat'] !== null ){
+				var pmpromm_map_start = { lat: parseFloat( pmpromm_marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[0]['marker_meta']['lng'] ) };
 			}
 		}
 	}
 	
 	//Initiating the map
-	var pmpro_map = new google.maps.Map( map_element, {
-		center: map_start,
-		zoom: parseInt( zoom_level )
+	var pmpro_map = new google.maps.Map( pmpromm_map_element, {
+		center: pmpromm_map_start,
+		zoom: parseInt( pmpromm_zoom_level )
 	});
 
-	var infowindows = new Array();
+	var pmpromm_infowindows = new Array();
 
-	//Making sure we actually have markers
-	if( typeof marker_data !== 'undefined' ){
+	//Making sure we actually have pmpromm_markers
+	if( typeof pmpromm_marker_data !== 'undefined' ){
 
-		for( i = 0; i < marker_data.length; i++ ){
+		for( i = 0; i < pmpromm_marker_data.length; i++ ){
 
-			var latlng = { lat: parseFloat( marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( marker_data[i]['marker_meta']['lng'] ) };
+			var pmpromm_latlng = { lat: parseFloat( pmpromm_marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[i]['marker_meta']['lng'] ) };
 
-			var contentString = '<div id="pmpro_infowindow_'+i+'" class="'+infowindow_classes+'" style="width: 100%; max-width: '+infowindow_width+'px;">'+
+			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
-				marker_data[i]['marker_content']+
+				pmpromm_marker_data[i]['marker_content']+
 				'</div>'+
 			'</div>';
 
-			var infowindow = new google.maps.InfoWindow({
-				content: contentString
+			var pmpromm_infowindow = new google.maps.InfoWindow({
+				content: pmpromm_contentString
 			});
 
-			infowindows.push( infowindow );
+			pmpromm_infowindows.push( pmpromm_infowindow );
 
-			var marker = new google.maps.Marker({
-				position: latlng,
+			var pmpromm_marker = new google.maps.Marker({
+				position: pmpromm_latlng,
 				map: pmpro_map,
-				content: contentString,
-				infowindow: infowindow
+				content: pmpromm_contentString,
+				pmpromm_infowindow: pmpromm_infowindow
 			});
 
-			google.maps.event.addListener( marker,'click', (function(marker,content,infowindow){ 
+			google.maps.event.addListener( pmpromm_marker,'click', (function(pmpromm_marker,content,pmpromm_infowindow){ 
 			    return function() {
-			    	//Close all other infowindows before we open a new one
-			    	for( i = 0; i < infowindows.length; i++ ){
-			    		infowindows[i].close();
+			    	//Close all other pmpromm_infowindows before we open a new one
+			    	for( i = 0; i < pmpromm_infowindows.length; i++ ){
+			    		pmpromm_infowindows[i].close();
 			    	}
-			        infowindow.setContent(this.content);
-			        infowindow.open(pmpro_map,marker);
+			        pmpromm_infowindow.setContent(this.content);
+			        pmpromm_infowindow.open(pmpro_map,pmpromm_marker);
 			    };
-			})(marker,content,infowindow));  
+			})(pmpromm_marker,content,pmpromm_infowindow));  
 
 			
 		}

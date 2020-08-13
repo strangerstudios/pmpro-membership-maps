@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Paid Memberships Pro - Membership Maps
- * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-membership-maps/
+ * Plugin URI: https://www.paidmembershipspro.com/add-ons/member-directory/#membership-maps
  * Description: Adds a map to your member directory and profile page.
  * Version: 0.1
  * Author: Paid Memberships Pro
@@ -406,7 +406,7 @@ function pmpromm_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-membership-maps.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('#')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>', /// To be updated.
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/member-directory/#membership-maps')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>',
 			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-membership-maps' ) ) . '">' . __( 'Support', 'pmpro-membership-maps' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
@@ -574,6 +574,10 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 
 }
 
+/**
+ * Error log if there are issues with the Google Maps API
+ * @since 0.1
+ */
 function pmpromm_report_geocode_api_error( $response ){
 
 	if( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ( defined( 'PMPROMM_DEBUG' ) && PMPROMM_DEBUG )  ){

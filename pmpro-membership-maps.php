@@ -373,8 +373,6 @@ function pmpromm_after_checkout( $user_id, $morder ){
 
 	$member_address = apply_filters( 'pmpromm_member_address_after_checkout', $member_address, $user_id, $morder );
 
-	$address_string = implode( ", ", array_filter( $member_address ) );	
-
 	$coordinates = pmpromm_geocode_address( $member_address, $morder );
 
 	if( is_array( $coordinates ) ){
@@ -490,6 +488,7 @@ function pmpromm_show_single_map_profile( $pu ){
 				'state' 	=> get_user_meta( $pu->ID, 'pmpro_bstate', true ),
 				'zip' 		=> get_user_meta( $pu->ID, 'pmpro_bzipcode', true )
 			);
+			
 			$member_address = apply_filters( 'pmpromm_single_map_address_geocode', $member_address, $pu );
 
 			$coordinates = pmpromm_geocode_address( $member_address );	

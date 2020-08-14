@@ -454,7 +454,7 @@ function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 	echo pmpromm_shortcode( $attributes );
 
 }
-add_action( 'pmpromm_before', 'pmpromm_load_map_directory_page', 10, 2 );
+add_action( 'pmpro_member_directory_before', 'pmpromm_load_map_directory_page', 10, 2 );
 
 //If we're on the profile page, only show that member's marker
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){

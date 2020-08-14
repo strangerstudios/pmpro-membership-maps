@@ -477,6 +477,7 @@ function pmpromm_show_single_map_profile( $pu ){
 
 		$lat = get_user_meta( $pu->ID, 'pmpro_lat', true );
 		$lng = get_user_meta( $pu->ID, 'pmpro_lng', true );
+
 		$baddress1 = get_user_meta( $pu->ID, 'pmpro_baddress1', true );
 
 		if( ( empty( $lat ) || empty( $lng ) ) && !empty( $baddress1 ) ){
@@ -499,10 +500,12 @@ function pmpromm_show_single_map_profile( $pu ){
 			}
 
 		}
-		
-	}
 
-	echo do_shortcode( '[pmpro_membership_maps]' );
+		if( !empty( $lat ) && !empty( $lng ) ){
+			echo do_shortcode( '[pmpro_membership_maps]' );
+		}
+		
+	}		
 
 }
 add_action( 'pmpro_member_profile_before', 'pmpromm_show_single_map_profile', 10, 1 );

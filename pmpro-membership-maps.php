@@ -385,6 +385,34 @@ function pmpromm_after_checkout( $user_id, $morder ){
 }
 add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
 
+function pmpromm_update_billing_info( $morder ){
+
+	global $current_user;
+
+	if( !empty( $_REQUEST['baddress1'] ) ){
+		//Billing details are active, we can geocode
+		$member_address = array(
+			'street' 	=> $_REQUEST['baddress1'].' '.$_REQUEST['baddress2'],
+			'city' 		=> $_REQUEST['bcity'],
+			'state' 	=> $_REQUEST['bstate'],
+			'zip' 		=> $_REQUEST['bzipcode']
+		);
+
+		$member_address = apply_filters( 'pmpromm_member_address_after_checkout', $member_address, $current_user->ID, $morder );
+
+		$coordinates = pmpromm_geocode_address( $member_address, $morder );
+
+		if( is_array( $coordinates ) ){
+			if( !empty( $coordinates['lat'] ) && !empty( $coordinates['lng'] ) ){
+				update_user_meta( $current_user->ID, 'pmpro_lat', $coordinates['lat'] );
+				update_user_meta( $current_user->ID, 'pmpro_lng', $coordinates['lng'] );
+			}
+		}		
+	}	
+
+}
+add_action( 'pmpro_billing_after_preheader', 'pmpromm_update_billing_info', 10, 1 );
+
 //Adds API Key field to advanced settings page
 function pmpromm_advanced_settings_field( $fields ) {
        

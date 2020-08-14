@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Paid Memberships Pro - Membership Maps
- * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-membership-maps/
- * Description: Adds a map to your member directory and profile page.
+ * Plugin Name: Paid Memberships Pro - Membership Maps Add On
+ * Plugin URI: https://www.paidmembershipspro.com/add-ons/membership-maps/
+ * Description: Display a map of members or for a single member's profile.
  * Version: 0.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
@@ -416,7 +416,7 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'field_name' => 'pmpromm_api_key',
 		'field_type' => 'text',
 		'label' => __( 'Google Maps API Key', 'pmpro-membership-maps' ),
-		'description' => __( 'Applies to Paid Memberships Pro - Membership Maps Add-on', 'pmpro-membership-maps')
+		'description' => __( 'Used by the Membership Maps Add On', 'pmpro-membership-maps')
 	);
 
     return $fields;
@@ -430,7 +430,7 @@ function pmpromm_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-membership-maps.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('#')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>', /// To be updated.
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/membership-maps/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>',
 			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-membership-maps' ) ) . '">' . __( 'Support', 'pmpro-membership-maps' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);

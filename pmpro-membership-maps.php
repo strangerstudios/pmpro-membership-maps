@@ -373,38 +373,14 @@ function pmpromm_after_checkout( $user_id, $morder ){
 
 	$member_address = apply_filters( 'pmpromm_member_address_after_checkout', $member_address, $user_id, $morder );
 
-	$address_string = implode( ", ", array_filter( $member_address ) );	
+	$coordinates = pmpromm_geocode_address( $member_address, $morder );
 
-	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
-		array( 'body' => array(
-			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
-			'address' 	=> $address_string
-		) ) 
-	);
-
-	if( !is_wp_error( $remote_request ) ){
-
-		$request_body = wp_remote_retrieve_body( $remote_request );
-
-		$request_body = json_decode( $request_body );
-
-		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
-
-			if( !empty( $request_body->results[0] ) ){
-
-				$lat = $request_body->results[0]->geometry->location->lat;
-				$lng = $request_body->results[0]->geometry->location->lng;
-
-				update_user_meta( $user_id, 'pmpro_lat', $lat );
-				update_user_meta( $user_id, 'pmpro_lng', $lng );
-
-				do_action( 'pmpromm_geocode_response', $request_body, $user_id, $morder );
-
-			}
-
+	if( is_array( $coordinates ) ){
+		if( !empty( $coordinates['lat'] ) && !empty( $coordinates['lng'] ) ){
+			update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
+			update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
 		}
-
-	}
+	}		
 
 }
 add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
@@ -497,6 +473,35 @@ add_filter( 'pmpro_membership_maps_sql_parts', 'pmpromm_load_profile_map_marker'
 //Adds the map to the profile page
 function pmpromm_show_single_map_profile( $pu ){
 
+	if( !empty( $pu->ID ) ){
+
+		$lat = get_user_meta( $pu->ID, 'pmpro_lat', true );
+		$lng = get_user_meta( $pu->ID, 'pmpro_lng', true );
+		$baddress1 = get_user_meta( $pu->ID, 'pmpro_baddress1', true );
+
+		if( ( empty( $lat ) || empty( $lng ) ) && !empty( $baddress1 ) ){
+			//Coordinates are empty but address isn't, lets try geocode
+			
+			$member_address = array(
+				'street' 	=> $baddress1 .' '. get_user_meta( $pu->ID, 'pmpro_baddress2', true ),
+				'city' 		=> get_user_meta( $pu->ID, 'pmpro_bcity', true ),
+				'state' 	=> get_user_meta( $pu->ID, 'pmpro_bstate', true ),
+				'zip' 		=> get_user_meta( $pu->ID, 'pmpro_bzipcode', true )
+			);
+			
+			$member_address = apply_filters( 'pmpromm_single_map_address_geocode', $member_address, $pu );
+
+			$coordinates = pmpromm_geocode_address( $member_address );	
+
+			if( is_array( $coordinates ) ){
+				update_user_meta( $pu->ID, 'pmpro_lat', $coordinates['lat'] );
+				update_user_meta( $pu->ID, 'pmpro_lng', $coordinates['lng'] );
+			}
+
+		}
+		
+	}
+
 	echo do_shortcode( '[membership_maps]' );
 
 }
@@ -527,4 +532,80 @@ function pmpromm_get_element_class( $class, $element = null ){
 	}
 
 	return $class;
+}
+
+function pmpromm_geocode_address( $addr_array, $morder = false ){
+
+	$address_string = implode( ", ", array_filter( $addr_array ) );	
+
+	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
+		array( 'body' => array(
+			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
+			'address' 	=> $address_string
+		) ) 
+	);
+
+	if( !is_wp_error( $remote_request ) ){
+
+		$request_body = wp_remote_retrieve_body( $remote_request );
+
+		$request_body = json_decode( $request_body );
+
+		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
+
+			if( !empty( $request_body->results[0] ) ){
+
+				$lat = $request_body->results[0]->geometry->location->lat;
+				$lng = $request_body->results[0]->geometry->location->lng;				
+
+				do_action( 'pmpromm_geocode_response', $request_body, $morder );
+
+				return apply_filters( 'pmpromm_geocode_return_array', array( 'lat' => $lat, 'lng' => $lng ), $request_body, $addr_array, $morder );
+
+			}
+
+		} else {
+
+			pmpromm_report_geocode_api_error( $request_body );
+
+		}
+
+	}
+
+}
+
+/**
+ * Error log if there are issues with the Google Maps API
+ * @since 0.1
+ */
+function pmpromm_report_geocode_api_error( $response ){
+
+	if( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ( defined( 'PMPROMM_DEBUG' ) && PMPROMM_DEBUG )  ){
+
+		if( !empty( $response->error_message ) ){
+
+			$to = get_bloginfo( 'admin_email' );
+
+			if( defined( 'PMPROMM_DEBUG_EMAIL' ) && PMPROMM_DEBUG_EMAIL !== "" ){
+				$to = PMPROMM_DEBUG_EMAIL;
+			}
+
+			$subj = sprintf( __('Paid Memberships Pro - Membership Maps: An Error Occurred - %s', 'pmpro-membership-maps' ), current_time( 'mysql') );
+			
+			$error = $response->status .': '. $response->error_message;
+
+			if( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ){
+				error_log( "Paid Memberships Pro - Membership Maps: ".$error );
+			}
+
+			$mail_error = apply_filters( 'pmpromm_enable_geocode_error_email', true );
+
+			if( $mail_error ){
+				wp_mail( $to, $subj, $error );
+			}
+		
+		}
+
+	}
+	
 }

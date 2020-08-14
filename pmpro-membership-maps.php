@@ -62,13 +62,13 @@ function pmpromm_shortcode( $atts ){
 	 * Setup defaults for the map. We're passing through the ID attribute
 	 * to allow developers to differentiate maps. 
 	 */	
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $ID ) );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $ID ) );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'infowindow_width', $infowindow_width );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $ID ) );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $ID ) );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_width', $infowindow_width );
 
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'marker_data', $marker_data );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'zoom_level', $zoom );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'infowindow_classes', pmpromm_get_element_class( 'pmpromm_infowindow' ) );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_marker_data', $marker_data );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_zoom_level', $zoom );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_classes', pmpromm_get_element_class( 'pmpromm_infowindow' ) );
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );		
 

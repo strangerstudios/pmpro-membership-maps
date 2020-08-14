@@ -416,7 +416,7 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'field_name' => 'pmpromm_api_key',
 		'field_type' => 'text',
 		'label' => __( 'Google Maps API Key', 'pmpro-membership-maps' ),
-		'description' => __( 'Used by the Membership Maps Add On', 'pmpro-membership-maps')
+		'description' => __( 'Used by the Membership Maps Add On.', 'pmpro-membership-maps')
 	);
 
     return $fields;

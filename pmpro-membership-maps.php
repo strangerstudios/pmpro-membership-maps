@@ -75,7 +75,7 @@ function pmpromm_shortcode( $atts ){
 	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$ID."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";	
 
 }
-add_shortcode( 'membership_maps', 'pmpromm_shortcode' );
+add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );
 
 function pmpromm_load_marker_data( $levels = false, $marker_attributes = array(), $start = 0, $limit = 100, $s = "", $pn = false, $order_by = false, $order = false, $end = false ){
 	/**
@@ -502,7 +502,7 @@ function pmpromm_show_single_map_profile( $pu ){
 		
 	}
 
-	echo do_shortcode( '[membership_maps]' );
+	echo do_shortcode( '[pmpro_membership_maps]' );
 
 }
 add_action( 'pmpro_member_profile_before', 'pmpromm_show_single_map_profile', 10, 1 );

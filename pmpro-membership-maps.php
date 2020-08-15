@@ -10,7 +10,7 @@
  * Domain Path: /languages
  */
 
-function pmpromm_shortcode( $atts ){	
+function pmpromm_shortcode( $atts ){
 
 	extract(shortcode_atts(array(
 		'height' 		=> '400', //Uses px
@@ -41,27 +41,27 @@ function pmpromm_shortcode( $atts ){
 		'fields'			=> $fields
 	) );
 
-	$notice = apply_filters( 'pmpromm_default_map_notice', __( "This map could not be loaded. Please ensure that you've entered in your Google Maps API Key, and that there are no JavaScript errors on the page.", "pmpro-membership-maps" ) );
-	
+	$notice = apply_filters( 'pmpromm_default_map_notice', __( 'This map could not be loaded. Please ensure that you have entered your Google Maps API Key and that there are no JavaScript errors on the page.', 'pmpro-membership-maps' ) );
+
 	//Get the marker data
-	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes);	
+	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes);
 
 	$api_key = pmpro_getOption( 'pmpromm_api_key' );
-	
+
 	$libraries = apply_filters( 'pmpromm_google_maps_libraries', array() );
 
 	wp_enqueue_script( 'jquery' );
-	
+
 	wp_enqueue_script( 'pmpro-membership-maps-google-maps', 'https://maps.googleapis.com/maps/api/js?key='.$api_key.'&libraries='.implode( ",", $libraries ) );
 
-	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ) );	
+	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ) );
 
 	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ) );
 
 	/**
 	 * Setup defaults for the map. We're passing through the ID attribute
 	 * to allow developers to differentiate maps. 
-	 */	
+	 */
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $ID ) );
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $ID ) );
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_width', $infowindow_width );
@@ -70,9 +70,9 @@ function pmpromm_shortcode( $atts ){
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_zoom_level', $zoom );
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_classes', pmpromm_get_element_class( 'pmpromm_infowindow' ) );
 
-	wp_enqueue_script( 'pmpro-membership-maps-javascript' );		
+	wp_enqueue_script( 'pmpro-membership-maps-javascript' );
 
-	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$ID."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";	
+	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$ID."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
 
 }
 add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );
@@ -83,12 +83,12 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 	 * to be used in the same function as one would filter the Member Directory filter pmpromm_sql
 	 * Some of these variables are ignored in the query
 	 */
-	
+
 	global $wpdb;
 
 	$sql_parts = array();
 
-	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";	
+	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
 
 	$sql_parts['JOIN'] = "
 	LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id 
@@ -261,7 +261,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				$email_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_email' ).'">';
 					$email_content .= '<strong>'.__( 'Email Address', 'pmpro-membership-maps' ).'</strong>&nbsp;';
 					$email_content .= $member['user_email'];
-				$email_content .= '</p>';						
+				$email_content .= '</p>';
 			}
 
 			$level_content = "";
@@ -278,7 +278,6 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				$startdate_content .= '<strong>'.__('Start Date', 'pmpro-membership-maps').'</strong>&nbsp;';
 				$startdate_content .= date( get_option("date_format"), $member['joindate'] );
 				$startdate_content .= '</p>';
-						
 			}
 
 			$profile_content = "";
@@ -290,7 +289,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			if( !empty( $fields_array ) ){
 				foreach( $fields_array as $field ){
-						
+
 					if ( WP_DEBUG ) {
 						error_log("Content of field data: " . print_r( $field, true));
 					}
@@ -301,9 +300,9 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 					}
 
 					if( !empty( $member[$field[1]] ) ){
-						
+
 						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$field[1] ).'">';
-								
+
 						if( is_array( $meta_field ) && !empty( $meta_field['filename'] ) ){
 							//this is a file field
 							$rhfield_content .= '<strong>'.$field[0].'</strong>';
@@ -337,7 +336,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				'avatar' 	=> $avatar_content,
 				'email' 	=> $email_content,
 				'level'		=> $level_content,
-				'startdate' => $startdate_content,				
+				'startdate' => $startdate_content,
 				'rh_fields'	=> $rhfield_content,
 				'profile'	=> $profile_content,
 			) );
@@ -380,7 +379,7 @@ function pmpromm_after_checkout( $user_id, $morder ){
 			update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
 			update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
 		}
-	}		
+	}
 
 }
 add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
@@ -407,15 +406,15 @@ function pmpromm_update_billing_info( $morder ){
 				update_user_meta( $current_user->ID, 'pmpro_lat', $coordinates['lat'] );
 				update_user_meta( $current_user->ID, 'pmpro_lng', $coordinates['lng'] );
 			}
-		}		
-	}	
+		}
+	}
 
 }
 add_action( 'pmpro_billing_after_preheader', 'pmpromm_update_billing_info', 10, 1 );
 
 //Adds API Key field to advanced settings page
 function pmpromm_advanced_settings_field( $fields ) {
-       
+
 	$fields['pmpromm_api_key'] = array(
 		'field_name' => 'pmpromm_api_key',
 		'field_type' => 'text',
@@ -423,7 +422,7 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'description' => __( 'Used by the Membership Maps Add On.', 'pmpro-membership-maps')
 	);
 
-    return $fields;
+	return $fields;
 }
 add_filter('pmpro_custom_advanced_settings','pmpromm_advanced_settings_field', 20);
 
@@ -434,7 +433,7 @@ function pmpromm_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-membership-maps.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/membership-maps/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/membership-maps/') . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-membership-maps' ) ) . '">' . __( 'Docs', 'pmpro-membership-maps' ) . '</a>',
 			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-membership-maps' ) ) . '">' . __( 'Support', 'pmpro-membership-maps' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
@@ -510,17 +509,16 @@ function pmpromm_show_single_map_profile( $pu ){
 
 		if( ( empty( $lat ) || empty( $lng ) ) && !empty( $baddress1 ) ){
 			//Coordinates are empty but address isn't, lets try geocode
-			
 			$member_address = array(
 				'street' 	=> $baddress1 .' '. get_user_meta( $pu->ID, 'pmpro_baddress2', true ),
 				'city' 		=> get_user_meta( $pu->ID, 'pmpro_bcity', true ),
 				'state' 	=> get_user_meta( $pu->ID, 'pmpro_bstate', true ),
 				'zip' 		=> get_user_meta( $pu->ID, 'pmpro_bzipcode', true )
 			);
-			
+
 			$member_address = apply_filters( 'pmpromm_single_map_address_geocode', $member_address, $pu );
 
-			$coordinates = pmpromm_geocode_address( $member_address );	
+			$coordinates = pmpromm_geocode_address( $member_address );
 
 			if( is_array( $coordinates ) ){
 				update_user_meta( $pu->ID, 'pmpro_lat', $coordinates['lat'] );
@@ -532,8 +530,8 @@ function pmpromm_show_single_map_profile( $pu ){
 		if( !empty( $lat ) && !empty( $lng ) ){
 			echo do_shortcode( '[pmpro_membership_maps]' );
 		}
-		
-	}		
+
+	}
 
 }
 add_action( 'pmpro_member_profile_before', 'pmpromm_show_single_map_profile', 10, 1 );
@@ -567,7 +565,7 @@ function pmpromm_get_element_class( $class, $element = null ){
 
 function pmpromm_geocode_address( $addr_array, $morder = false ){
 
-	$address_string = implode( ", ", array_filter( $addr_array ) );	
+	$address_string = implode( ", ", array_filter( $addr_array ) );
 
 	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
 		array( 'body' => array(
@@ -587,7 +585,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 			if( !empty( $request_body->results[0] ) ){
 
 				$lat = $request_body->results[0]->geometry->location->lat;
-				$lng = $request_body->results[0]->geometry->location->lng;				
+				$lng = $request_body->results[0]->geometry->location->lng;
 
 				do_action( 'pmpromm_geocode_response', $request_body, $morder );
 
@@ -611,7 +609,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
  */
 function pmpromm_report_geocode_api_error( $response ){
 
-	if( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ( defined( 'PMPROMM_DEBUG' ) && PMPROMM_DEBUG )  ){
+	if( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ( defined( 'PMPROMM_DEBUG' ) && PMPROMM_DEBUG ) ){
 
 		if( !empty( $response->error_message ) ){
 
@@ -622,7 +620,7 @@ function pmpromm_report_geocode_api_error( $response ){
 			}
 
 			$subj = sprintf( __('Paid Memberships Pro - Membership Maps: An Error Occurred - %s', 'pmpro-membership-maps' ), current_time( 'mysql') );
-			
+
 			$error = $response->status .': '. $response->error_message;
 
 			if( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ){
@@ -634,9 +632,9 @@ function pmpromm_report_geocode_api_error( $response ){
 			if( $mail_error ){
 				wp_mail( $to, $subj, $error );
 			}
-		
+
 		}
 
 	}
-	
+
 }

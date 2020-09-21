@@ -226,6 +226,10 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 		foreach( $members as $member ){
 			$member_array = array();
 
+			if( empty( $member['lat'] ) || empty( $member['lng'] ) ){
+				continue;
+			}
+
 			$member_array['ID'] = $member['ID'];
 			$member_array['marker_meta']['lat'] = $member['lat'];
 			$member_array['marker_meta']['lng'] = $member['lng'];

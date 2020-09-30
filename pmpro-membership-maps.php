@@ -43,8 +43,10 @@ function pmpromm_shortcode( $atts ){
 
 	$notice = apply_filters( 'pmpromm_default_map_notice', __( 'This map could not be loaded. Please ensure that you have entered your Google Maps API Key and that there are no JavaScript errors on the page.', 'pmpro-membership-maps' ) );
 
+	$start = apply_filters( 'pmpromm_load_markers_start', 0, $levels, $marker_attributes );
+	$limit = apply_filters( 'pmpromm_load_markers_limit', 100, $levels, $marker_attributes );
 	//Get the marker data
-	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes);
+	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes, $start, $limit );
 
 	$api_key = pmpro_getOption( 'pmpromm_api_key' );
 
@@ -96,9 +98,11 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 	LEFT JOIN $wpdb->usermeta uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id 
 	LEFT JOIN $wpdb->usermeta umlat ON umlat.meta_key = 'pmpro_lat' AND u.ID = umlat.user_id 
 	LEFT JOIN $wpdb->usermeta umlng ON umlng.meta_key = 'pmpro_lng' AND u.ID = umlng.user_id 
-	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id 
+	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id 
+	LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 
-	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 ";
+	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 AND umlat.meta_value IS NOT NULL ";
 
 	$sql_parts['GROUP'] = "GROUP BY u.ID ";
 

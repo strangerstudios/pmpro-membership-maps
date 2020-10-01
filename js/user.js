@@ -63,7 +63,7 @@ jQuery(document).ready(function(){
 			        pmpromm_infowindow.setContent(this.content);
 			        pmpromm_infowindow.open(pmpro_map,pmpromm_marker);
 			    };
-			})(pmpromm_marker,content,pmpromm_infowindow));  
+			})(pmpromm_marker,pmpromm_contentString,pmpromm_infowindow));  
 
 			
 		}

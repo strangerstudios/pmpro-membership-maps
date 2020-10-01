@@ -422,6 +422,12 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'description' => __( 'Used by the Membership Maps Add On.', 'pmpro-membership-maps')
 	);
 
+	if( defined( 'PMPRO_VERSION' ) ){
+		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>' );
+		}
+	}
+
 	return $fields;
 }
 add_filter('pmpro_custom_advanced_settings','pmpromm_advanced_settings_field', 20);

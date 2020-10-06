@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 3.5
 Tested up to: 5.5
-Stable tag: 0.1
+Stable tag: 0.2
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,14 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.2 =
+* BUG FIX: Fixed an error where an incorrect variable was referenced in JavaScript.
+* BUG FIX: Fixed a warning for empty marker coordinates.
+* ENHANCEMENT: Added in link to documentation on how to get a Google Maps API key on the 'Advanced Settings' page.
+* ENHANCEMENT: General improvements to code to handle larger amounts of markers. Defaults to 100 markers at a time.
+* ENHANCEMENT: New filters added to allow a start and end for loading markers to let developer's load only a certain amount of markers. 'pmpromm_load_markers_start' and 'pmpromm_load_markers_limit' respectively.
+* ENHANCEMENT: Support internationalization and loaded general .pot, .po and .mo files for translations.
 
 = 0.1 =
 * Initial commit.

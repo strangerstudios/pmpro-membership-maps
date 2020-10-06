@@ -1,0 +1,6 @@
+#Items to ignore when exporting to zip.
+
+.github export-ignore
+.gitattributes export-ignore
+languages/gettext.sh export-ignore
+readme.md export-ignore

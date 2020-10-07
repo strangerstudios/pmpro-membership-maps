@@ -1,3 +1,5 @@
+![](membership-maps-banner.jpg)
+
 # [Membership Maps Add On for Paid Memberships Pro](https://www.paidmembershipspro.com/add-ons/membership-maps/) #
 [comment]: # (Generate badges from shields.io, only works for .org plugins to get other stats etc. We'd have to create our own endpoints for Premium plugins)
 

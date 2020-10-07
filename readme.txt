@@ -44,7 +44,7 @@ Please visit our premium support site at https://www.paidmembershipspro.com for 
 
 == Changelog ==
 
-= 0.2 =
+= 0.2 07-10-2020 =
 * BUG FIX: Fixed an error where an incorrect variable was referenced in JavaScript.
 * BUG FIX: Fixed a warning for empty marker coordinates.
 * ENHANCEMENT: Added in link to documentation on how to get a Google Maps API key on the 'Advanced Settings' page.

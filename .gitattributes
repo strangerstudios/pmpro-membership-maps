@@ -3,4 +3,5 @@
 .github export-ignore
 .gitattributes export-ignore
 languages/gettext.sh export-ignore
-readme.md export-ignore
+README.md export-ignore
+membership-maps-banner.jpg export-ignore

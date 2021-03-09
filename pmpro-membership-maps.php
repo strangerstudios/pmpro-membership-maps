@@ -16,7 +16,7 @@ function pmpromm_shortcode( $atts ){
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
 		'zoom'			=> '8',
-		'ID'			=> '1',
+		'map_id'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
 		//Using same fields as member directory
@@ -61,11 +61,11 @@ function pmpromm_shortcode( $atts ){
 	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ) );
 
 	/**
-	 * Setup defaults for the map. We're passing through the ID attribute
+	 * Setup defaults for the map. We're passing through the map_id attribute
 	 * to allow developers to differentiate maps. 
 	 */
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $ID ) );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $ID ) );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $map_id ) );
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $map_id ) );
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_width', $infowindow_width );
 
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_marker_data', $marker_data );
@@ -74,7 +74,7 @@ function pmpromm_shortcode( $atts ){
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );
 
-	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$ID."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
+	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$map_id."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
 
 }
 add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );

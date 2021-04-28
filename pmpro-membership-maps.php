@@ -501,9 +501,27 @@ add_action( 'pmpro_member_directory_before', 'pmpromm_load_map_directory_page', 
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){
 
 	if( isset( $_REQUEST['pu'] ) ){
-		$member = sanitize_text_field( $_REQUEST['pu'] );
-		// $sql_parts['WHERE'] .= "AND u.user_nicename = ".sanitize_text_field( $_REQUEST['pu'] );
-		$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($member) . "%' OR u.user_email LIKE '%" . esc_sql($member) . "%' OR u.display_name LIKE '%" . esc_sql($member) . "%' OR um.meta_value LIKE '%" . esc_sql($member) . "%') ";
+
+	    //Get the profile user - doing this helps when profile's nicenames look like email addresses. This caused issues in the past.
+		if(!empty($_REQUEST['pu']) && is_numeric($_REQUEST['pu']))
+			$pu = get_user_by('id', $_REQUEST['pu']);
+		elseif(!empty($_REQUEST['pu']))
+			$pu = get_user_by('slug', $_REQUEST['pu']);
+		elseif(!empty($current_user->ID))
+			$pu = $current_user;
+		else
+			$pu = false;
+				
+		unset($sql_parts['GROUP']);
+
+		if( $pu ){
+
+		    $member = sanitize_text_field( $pu->data->user_login );
+
+			$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($member) . "%' OR u.user_email LIKE '%" . esc_sql($member) . "%' OR u.display_name LIKE '%" . esc_sql($member) . "%' OR um.meta_value LIKE '%" . esc_sql($member) . "%') ";
+			
+		}
+
 	}
 
 	return $sql_parts;

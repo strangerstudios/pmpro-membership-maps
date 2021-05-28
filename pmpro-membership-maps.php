@@ -15,7 +15,7 @@ function pmpromm_shortcode( $atts ){
 	extract(shortcode_atts(array(
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
-		'zoom'			=> '8',
+		'zoom'			=> apply_filters( 'pmpromm_default_zoom_level', '8' ),
 		'map_id'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
@@ -489,13 +489,26 @@ function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 		'show_level' => $atts['show_level'] ,
 		'show_startdate' => $atts['show_startdate'] ,
 		'avatar_align' => $atts['avatar_align'] ,
-		'fields' => $atts['fields'] ,
+		'fields' => $atts['fields'],
+		'zoom' => isset( $atts['zoom'] ) ? $atts['zoom'] : '8'
 	);
 
 	echo pmpromm_shortcode( $attributes );
 
 }
 add_action( 'pmpro_member_directory_before', 'pmpromm_load_map_directory_page', 10, 2 );
+
+/**
+ * Adds the zoom level to the Membership Directory pages
+ */
+function pmpromm_add_zoom_level_directory_page( $atts ){
+
+	$atts['zoom'] = apply_filters( 'pmpromm_default_zoom_level', '8' ); //Must be a string to prevent any PHP errors
+
+	return $atts;
+
+}
+add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_directory_page', 10, 1 );
 
 //If we're on the profile page, only show that member's marker
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){

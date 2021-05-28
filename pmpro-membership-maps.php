@@ -596,7 +596,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 
 	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
 		array( 'body' => array(
-			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
+			'key' 		=> apply_filters( 'pmpromm_geocoding_api_key', pmpro_getOption( 'pmpromm_api_key' ) ),
 			'address' 	=> $address_string
 		) ) 
 	);

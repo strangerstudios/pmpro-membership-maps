@@ -15,8 +15,8 @@ function pmpromm_shortcode( $atts ){
 	extract(shortcode_atts(array(
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
-		'zoom'			=> '8',
-		'ID'			=> '1',
+		'zoom'			=> apply_filters( 'pmpromm_default_zoom_level', '8' ),
+		'map_id'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
 		//Using same fields as member directory
@@ -63,10 +63,10 @@ function pmpromm_shortcode( $atts ){
 	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ) );
 
 	/**
-	 * Setup defaults for the map. We're passing through the ID attribute
+	 * Setup defaults for the map. We're passing through the map_id attribute
 	 * to allow developers to differentiate maps. 
 	 */
-	
+
 	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
 	$map_styles = str_replace( " ", "", $map_styles );
 	$map_styles = preg_replace( "/\n+/", "", $map_styles );
@@ -79,8 +79,7 @@ function pmpromm_shortcode( $atts ){
 		'marker_data' => $marker_data,
 		'zoom_level' => $zoom,
 		'infowindow_classes' => pmpromm_get_element_class( 'pmpromm_infowindow' ),
-		'map_styles' => $map_styles,
-		// 'map_styles' => apply_filters( 'pmpromm_map_styles', '', $map_id )
+		'map_styles' => $map_styles		
 	) );
 
 
@@ -228,14 +227,16 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 	if(!empty($pmprorh_registration_fields)) {
 		foreach($pmprorh_registration_fields as $location) {
-			// var_dump($location);
+			
 			foreach($location as $field) {
+				
 				if(!empty($field->options))
 					$rh_fields[$field->name] = $field->options;
 			}
 		}
 	}
 
+	// var_dump($rh_fields);
 	$marker_array = array();
 
 	if( !empty( $members ) ){
@@ -249,6 +250,9 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$member_array['ID'] = $member['ID'];
 			$member_array['marker_meta']['lat'] = $member['lat'];
 			$member_array['marker_meta']['lng'] = $member['lng'];
+
+			$member['meta'] = get_user_meta( $member['ID'] );
+
 
 			if( !empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );
@@ -309,7 +313,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			if( !empty( $fields_array ) ){
 				foreach( $fields_array as $field ){
-
+					
 					if ( WP_DEBUG ) {
 						error_log("Content of field data: " . print_r( $field, true));
 					}
@@ -319,25 +323,31 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 						break;
 					}
 
-					if( !empty( $member[$field[1]] ) ){
+					if( !empty( $member['meta'][$field[1]] ) ){
 
-						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$field[1] ).'">';
+						$current_field_key = $field[0];
+						$current_field_val = reset( $member['meta'][$field[1]] );
 
-						if( is_array( $meta_field ) && !empty( $meta_field['filename'] ) ){
+						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$current_field_key ).'">';
+						if( is_array( $field ) && !empty( $field['filename'] ) ){
 							//this is a file field
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= pmpromm_display_file_field($meta_field);
-						} elseif ( is_array( $meta_field ) ){
+							$rhfield_content .= '<strong>'.$current_field_key.'</strong>';
+							$rhfield_content .= pmpromm_display_file_field($member['meta'][$field[1]]);
+						} elseif ( is_array( $field ) ){
+							$cf_field = array();
 							//this is a general array, check for Register Helper options first
-							if(!empty($rh_fields[$field[1]])) {
-								foreach($meta_field as $key => $value)
-									$meta_field[$key] = $rh_fields[$field[1]][$value];
+							if(!empty($rh_fields[$field[1]])) {								
+								foreach($field as $key => $value){
+									$cf_field[$current_field_key] = $rh_fields[$field[1]][$current_field_val];
+								}
+							} else {
+								$cf_field[] = $current_field_val;
 							}
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= implode(", ",$meta_field);
+							$rhfield_content .= '<strong>'.$current_field_key.'</strong> ';
+							$rhfield_content .= implode(", ",$cf_field);
 						} elseif ( !empty( $rh_fields[$field[1]] ) && is_array( $rh_fields[$field[1]] ) ) {
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= $rh_fields[$field[1]][$meta_field];
+							$rhfield_content .= '<strong>'.$current_field_val.'</strong>';
+							$rhfield_content .= $rh_fields[$field[1]][$current_field];
 						} elseif ( $field[1] == 'user_url' ){
 							$rhfield_content .= '<a href="'.$member[$field[1]].'" target="_blank">'.$field[0].'</a>';
 						} else {
@@ -501,7 +511,8 @@ function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 		'show_level' => $atts['show_level'] ,
 		'show_startdate' => $atts['show_startdate'] ,
 		'avatar_align' => $atts['avatar_align'] ,
-		'fields' => $atts['fields'] ,
+		'fields' => $atts['fields'],
+		'zoom' => isset( $atts['zoom'] ) ? $atts['zoom'] : '8'
 	);
 
 	echo pmpromm_shortcode( $attributes );
@@ -509,13 +520,43 @@ function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 }
 add_action( 'pmpro_member_directory_before', 'pmpromm_load_map_directory_page', 10, 2 );
 
+/**
+ * Adds the zoom level to the Membership Directory pages
+ */
+function pmpromm_add_zoom_level_directory_page( $atts ){
+
+	$atts['zoom'] = apply_filters( 'pmpromm_default_zoom_level', '8' ); //Must be a string to prevent any PHP errors
+
+	return $atts;
+
+}
+add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_directory_page', 10, 1 );
+
 //If we're on the profile page, only show that member's marker
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){
 
 	if( isset( $_REQUEST['pu'] ) ){
-		$member = sanitize_text_field( $_REQUEST['pu'] );
-		// $sql_parts['WHERE'] .= "AND u.user_nicename = ".sanitize_text_field( $_REQUEST['pu'] );
-		$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($member) . "%' OR u.user_email LIKE '%" . esc_sql($member) . "%' OR u.display_name LIKE '%" . esc_sql($member) . "%' OR um.meta_value LIKE '%" . esc_sql($member) . "%') ";
+
+	    //Get the profile user - doing this helps when profile's nicenames look like email addresses. This caused issues in the past.
+		if(!empty($_REQUEST['pu']) && is_numeric($_REQUEST['pu']))
+			$pu = get_user_by('id', $_REQUEST['pu']);
+		elseif(!empty($_REQUEST['pu']))
+			$pu = get_user_by('slug', $_REQUEST['pu']);
+		elseif(!empty($current_user->ID))
+			$pu = $current_user;
+		else
+			$pu = false;
+				
+		unset($sql_parts['GROUP']);
+
+		if( $pu ){
+
+		    $member = sanitize_text_field( $pu->data->user_login );
+
+			$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($member) . "%' OR u.user_email LIKE '%" . esc_sql($member) . "%' OR u.display_name LIKE '%" . esc_sql($member) . "%' OR um.meta_value LIKE '%" . esc_sql($member) . "%') ";
+			
+		}
+
 	}
 
 	return $sql_parts;
@@ -595,7 +636,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 
 	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
 		array( 'body' => array(
-			'key' 		=> pmpro_getOption( 'pmpromm_api_key' ),
+			'key' 		=> apply_filters( 'pmpromm_geocoding_api_key', pmpro_getOption( 'pmpromm_api_key' ) ),
 			'address' 	=> $address_string
 		) ) 
 	);

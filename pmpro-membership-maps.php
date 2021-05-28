@@ -216,14 +216,16 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 	if(!empty($pmprorh_registration_fields)) {
 		foreach($pmprorh_registration_fields as $location) {
-			// var_dump($location);
+			
 			foreach($location as $field) {
+				
 				if(!empty($field->options))
 					$rh_fields[$field->name] = $field->options;
 			}
 		}
 	}
 
+	// var_dump($rh_fields);
 	$marker_array = array();
 
 	if( !empty( $members ) ){
@@ -237,6 +239,9 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$member_array['ID'] = $member['ID'];
 			$member_array['marker_meta']['lat'] = $member['lat'];
 			$member_array['marker_meta']['lng'] = $member['lng'];
+
+			$member['meta'] = get_user_meta( $member['ID'] );
+
 
 			if( !empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );
@@ -297,7 +302,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			if( !empty( $fields_array ) ){
 				foreach( $fields_array as $field ){
-
+					
 					if ( WP_DEBUG ) {
 						error_log("Content of field data: " . print_r( $field, true));
 					}
@@ -307,25 +312,31 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 						break;
 					}
 
-					if( !empty( $member[$field[1]] ) ){
+					if( !empty( $member['meta'][$field[1]] ) ){
 
-						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$field[1] ).'">';
+						$current_field_key = $field[0];
+						$current_field_val = reset( $member['meta'][$field[1]] );
 
-						if( is_array( $meta_field ) && !empty( $meta_field['filename'] ) ){
+						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$current_field_key ).'">';
+						if( is_array( $field ) && !empty( $field['filename'] ) ){
 							//this is a file field
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= pmpromm_display_file_field($meta_field);
-						} elseif ( is_array( $meta_field ) ){
+							$rhfield_content .= '<strong>'.$current_field_key.'</strong>';
+							$rhfield_content .= pmpromm_display_file_field($member['meta'][$field[1]]);
+						} elseif ( is_array( $field ) ){
+							$cf_field = array();
 							//this is a general array, check for Register Helper options first
-							if(!empty($rh_fields[$field[1]])) {
-								foreach($meta_field as $key => $value)
-									$meta_field[$key] = $rh_fields[$field[1]][$value];
+							if(!empty($rh_fields[$field[1]])) {								
+								foreach($field as $key => $value){
+									$cf_field[$current_field_key] = $rh_fields[$field[1]][$current_field_val];
+								}
+							} else {
+								$cf_field[] = $current_field_val;
 							}
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= implode(", ",$meta_field);
+							$rhfield_content .= '<strong>'.$current_field_key.'</strong> ';
+							$rhfield_content .= implode(", ",$cf_field);
 						} elseif ( !empty( $rh_fields[$field[1]] ) && is_array( $rh_fields[$field[1]] ) ) {
-							$rhfield_content .= '<strong>'.$field[0].'</strong>';
-							$rhfield_content .= $rh_fields[$field[1]][$meta_field];
+							$rhfield_content .= '<strong>'.$current_field_val.'</strong>';
+							$rhfield_content .= $rh_fields[$field[1]][$current_field];
 						} elseif ( $field[1] == 'user_url' ){
 							$rhfield_content .= '<a href="'.$member[$field[1]].'" target="_blank">'.$field[0].'</a>';
 						} else {

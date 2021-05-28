@@ -55,7 +55,7 @@ function pmpromm_shortcode( $atts ){
 	wp_enqueue_script( 'jquery' );
 
 	wp_enqueue_script( 'pmpro-membership-maps-google-maps', add_query_arg( array( 'key' => $api_key, 'libraries' => implode( ",", $libraries ), 'v' => '3', 'style' => trim( 
-			preg_replace( "/\s+/", "", str_replace( " ", "", apply_filters( 'pmpromm_map_styles', '', $ID ) ) )
+			preg_replace( "/\s+/", "", str_replace( " ", "", apply_filters( 'pmpromm_map_styles', '', $map_id ) ) )
 		) ), 'https://maps.googleapis.com/maps/api/js' ) );
 
 	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ) );
@@ -67,26 +67,26 @@ function pmpromm_shortcode( $atts ){
 	 * to allow developers to differentiate maps. 
 	 */
 	
-	$map_styles = apply_filters( 'pmpromm_map_styles', '', $ID );
+	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
 	$map_styles = str_replace( " ", "", $map_styles );
 	$map_styles = preg_replace( "/\n+/", "", $map_styles );
 	$map_styles = preg_replace( "/\s+/", "", $map_styles );
 
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_vars', array(
-		'default_start' => apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $ID ),
-		'override_first_marker_location' => apply_filters( 'pmpromm_override_first_marker', '__return_false', $ID ),
+		'default_start' => apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $map_id ),
+		'override_first_marker_location' => apply_filters( 'pmpromm_override_first_marker', '__return_false', $map_id ),
 		'infowindow_width' => $infowindow_width,
 		'marker_data' => $marker_data,
 		'zoom_level' => $zoom,
 		'infowindow_classes' => pmpromm_get_element_class( 'pmpromm_infowindow' ),
 		'map_styles' => $map_styles,
-		// 'map_styles' => apply_filters( 'pmpromm_map_styles', '', $ID )
+		// 'map_styles' => apply_filters( 'pmpromm_map_styles', '', $map_id )
 	) );
 
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );
 
-	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$ID."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
+	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$map_id."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
 
 }
 add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );

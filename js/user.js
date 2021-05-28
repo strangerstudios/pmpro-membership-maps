@@ -7,37 +7,43 @@ jQuery(document).ready(function(){
 	}
 
 	//Set your own start location for a map
-	if( pmpromm_override_first_marker_location === true ){
-		var pmpromm_map_start = { lat: parseFloat( pmpromm_default_start['lat'] ), lng: parseFloat( pmpromm_default_start['lng'] ) };		
+	if( pmpromm_vars.override_first_marker_location === true ){
+		var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.default_start['lat'] ), lng: parseFloat( pmpromm_vars.default_start['lng'] ) };		
 	} else {
 		//If there isn't any pmpromm_markers, then use our default or override with the pmpromm_default_pmpromm_map_start filter
-		var pmpromm_map_start = { lat: parseFloat( pmpromm_default_start['lat'] ), lng: parseFloat( pmpromm_default_start['lng'] ) };
+		var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.default_start['lat'] ), lng: parseFloat( pmpromm_vars.default_start['lng'] ) };
 		//Else, use the first pmpromm_marker that's loaded as the starting point
-		if( typeof pmpromm_marker_data !== 'undefined' && pmpromm_marker_data.length > 0 ){
+		if( typeof pmpromm_vars.marker_data !== 'undefined' && pmpromm_vars.marker_data.length > 0 ){
 			if( pmpromm_marker_data[0]['marker_meta']['lat'] !== null ){
-				var pmpromm_map_start = { lat: parseFloat( pmpromm_marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[0]['marker_meta']['lng'] ) };
+				var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[0]['marker_meta']['lng'] ) };
 			}
 		}
 	}
 	
-	//Initiating the map
-	var pmpro_map = new google.maps.Map( pmpromm_map_element, {
+	var pmpromm_map_arguments = {
 		center: pmpromm_map_start,
-		zoom: parseInt( pmpromm_zoom_level )
-	});
+		zoom: parseInt( pmpromm_vars.zoom_level )
+	};
+
+	//Initiating the map
+	var pmpro_map = new google.maps.Map( pmpromm_map_element, pmpromm_map_arguments);
+
+	if( pmpromm_vars.map_styles !== "" ){
+		pmpro_map.setOptions({ styles:  JSON.parse( pmpromm_vars.map_styles ) });
+	}
 
 	var pmpromm_infowindows = new Array();
 
 	//Making sure we actually have pmpromm_markers
-	if( typeof pmpromm_marker_data !== 'undefined' ){
+	if( typeof pmpromm_vars.marker_data !== 'undefined' ){
 
-		for( i = 0; i < pmpromm_marker_data.length; i++ ){
+		for( i = 0; i < pmpromm_vars.marker_data.length; i++ ){
 
-			var pmpromm_latlng = { lat: parseFloat( pmpromm_marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[i]['marker_meta']['lng'] ) };
+			var pmpromm_latlng = { lat: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lng'] ) };
 
-			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_infowindow_width+'px;">'+
+			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
-				pmpromm_marker_data[i]['marker_content']+
+				pmpromm_vars.marker_data[i]['marker_content']+
 				'</div>'+
 			'</div>';
 

@@ -54,7 +54,9 @@ function pmpromm_shortcode( $atts ){
 
 	wp_enqueue_script( 'jquery' );
 
-	wp_enqueue_script( 'pmpro-membership-maps-google-maps', 'https://maps.googleapis.com/maps/api/js?key='.$api_key.'&libraries='.implode( ",", $libraries ) );
+	wp_enqueue_script( 'pmpro-membership-maps-google-maps', add_query_arg( array( 'key' => $api_key, 'libraries' => implode( ",", $libraries ), 'v' => '3', 'style' => trim( 
+			preg_replace( "/\s+/", "", str_replace( " ", "", apply_filters( 'pmpromm_map_styles', '', $map_id ) ) )
+		) ), 'https://maps.googleapis.com/maps/api/js' ) );
 
 	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ) );
 
@@ -64,13 +66,22 @@ function pmpromm_shortcode( $atts ){
 	 * Setup defaults for the map. We're passing through the map_id attribute
 	 * to allow developers to differentiate maps. 
 	 */
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_default_start', apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $map_id ) );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_override_first_marker_location', apply_filters( 'pmpromm_override_first_marker', '__return_false', $map_id ) );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_width', $infowindow_width );
 
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_marker_data', $marker_data );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_zoom_level', $zoom );
-	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_infowindow_classes', pmpromm_get_element_class( 'pmpromm_infowindow' ) );
+	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
+	$map_styles = str_replace( " ", "", $map_styles );
+	$map_styles = preg_replace( "/\n+/", "", $map_styles );
+	$map_styles = preg_replace( "/\s+/", "", $map_styles );
+
+	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_vars', array(
+		'default_start' => apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $map_id ),
+		'override_first_marker_location' => apply_filters( 'pmpromm_override_first_marker', '__return_false', $map_id ),
+		'infowindow_width' => $infowindow_width,
+		'marker_data' => $marker_data,
+		'zoom_level' => $zoom,
+		'infowindow_classes' => pmpromm_get_element_class( 'pmpromm_infowindow' ),
+		'map_styles' => $map_styles		
+	) );
+
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );
 

@@ -14,8 +14,8 @@ jQuery(document).ready(function(){
 		var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.default_start['lat'] ), lng: parseFloat( pmpromm_vars.default_start['lng'] ) };
 		//Else, use the first pmpromm_marker that's loaded as the starting point
 		if( typeof pmpromm_vars.marker_data !== 'undefined' && pmpromm_vars.marker_data.length > 0 ){
-			if( pmpromm_marker_data[0]['marker_meta']['lat'] !== null ){
-				var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_marker_data[0]['marker_meta']['lng'] ) };
+			if( pmpromm_vars.marker_data[0]['marker_meta']['lat'] !== null ){
+				var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.marker_data[0]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[0]['marker_meta']['lng'] ) };
 			}
 		}
 	}
@@ -41,7 +41,7 @@ jQuery(document).ready(function(){
 
 			var pmpromm_latlng = { lat: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lng'] ) };
 
-			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
+			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_vars.infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
 				pmpromm_vars.marker_data[i]['marker_content']+
 				'</div>'+

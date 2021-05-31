@@ -545,9 +545,7 @@ function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, 
 		elseif(!empty($current_user->ID))
 			$pu = $current_user;
 		else
-			$pu = false;
-				
-		unset($sql_parts['GROUP']);
+			$pu = false;		
 
 		if( $pu ){
 

@@ -44,7 +44,15 @@ Please visit our premium support site at https://www.paidmembershipspro.com for 
 
 == Changelog ==
 
-= 0.2 07-10-2020 =
+= 0.3 2021-06-09 =
+* ENHANCEMENT: Added in support for Zoom levels for map. New filter 'pmpromm_default_zoom_level'.
+* ENHANCEMENT: Filter added to geocoding API key. New filter 'pmpromm_geocoding_api_key'.
+* ENHANCEMENT: Custom fields now supported to show up inside the markers info window.
+* ENHANCEMENT: Code refactored and implemented better map styling options. New filter 'pmpromm_map_styles'.
+* ENHANCEMENT: General improvements made to single map query.
+* BUG FIX: Fixed an issue with shortcode attribute 'ID' conflicts and changed to 'map_id' to be more explicit.
+
+= 0.2 2020-10-07 =
 * BUG FIX: Fixed an error where an incorrect variable was referenced in JavaScript.
 * BUG FIX: Fixed a warning for empty marker coordinates.
 * ENHANCEMENT: Added in link to documentation on how to get a Google Maps API key on the 'Advanced Settings' page.

@@ -7,7 +7,7 @@ jQuery(document).ready(function(){
 	}
 
 	//Set your own start location for a map
-	if( pmpromm_vars.override_first_marker_location === true ){
+	if( pmpromm_vars.override_first_marker_location === "1" ){
 		var pmpromm_map_start = { lat: parseFloat( pmpromm_vars.default_start['lat'] ), lng: parseFloat( pmpromm_vars.default_start['lng'] ) };		
 	} else {
 		//If there isn't any pmpromm_markers, then use our default or override with the pmpromm_default_pmpromm_map_start filter

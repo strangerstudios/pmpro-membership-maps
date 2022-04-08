@@ -153,7 +153,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 	global $wpdb, $post, $pmpro_pages, $pmprorh_registration_fields;
 
-	if( !empty( $marker_attributes['show_avatar'] ) && ( 
+	if( isset( $marker_attributes['show_avatar'] ) && ( 
 		$marker_attributes['show_avatar'] === "0" || 
 		$marker_attributes['show_avatar'] === "false" || 
 		$marker_attributes['show_avatar'] === "no" || 

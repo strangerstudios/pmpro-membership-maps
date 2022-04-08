@@ -259,8 +259,9 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$name_content = "";
 			$name_content .= '<h3 class="'.pmpromm_get_element_class( 'pmpromm_display-name' ).'">';
-				if( !empty( $link ) && !empty( $profile_url ) ) {
-					$name_content .= '<a href="'.add_query_arg( 'pu', $member['user_nicename'], $profile_url ).'">'.$member['display_name'].'</a>';
+				if( !empty( $link ) && !empty( $profile_url ) ) {					
+					$user_profile = pmpromm_profile_url( $member, $profile_url );
+					$name_content .= '<a href="'.$user_profile.'">'.$member['display_name'].'</a>';
 				} else {
 					$name_content .= $member['display_name'];
 				}
@@ -272,7 +273,8 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				$avatar_align = ( !empty( $marker_attributes['avatar_align'] ) ) ? $marker_attributes['avatar_align'] : "";
 				$avatar_content .= '<div class="'.pmpromm_get_element_class( 'pmpromm_avatar' ).'">';
 					if( !empty( $marker_attributes['link'] ) && !empty( $profile_url ) ) {
-						$avatar_content .= '<a class="'.pmpromm_get_element_class( $avatar_align ).'" href="'.add_query_arg('pu', $member['user_nicename'], $profile_url).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</a>';
+						$user_profile = pmpromm_profile_url( $member, $profile_url );
+						$avatar_content .= '<a class="'.pmpromm_get_element_class( $avatar_align ).'" href="'.$user_profile.'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</a>';
 					} else {
 						$avatar_content .= '<span class="'.pmpromm_get_element_class( $avatar_align ).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</span>';
 					}
@@ -305,7 +307,8 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$profile_content = "";
 			if( !empty( $link ) && !empty( $profile_url ) ) {
-				$profile_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_profile' ).'"><a href="'.add_query_arg( 'pu', $member['user_nicename'], $profile_url ).'">'.apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ).'</a></p>';
+				$user_profile = pmpromm_profile_url( $member, $profile_url );
+				$profile_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_profile' ).'"><a href="'.$user_profile.'">'.apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ).'</a></p>';				
 			}
 
 			$rhfield_content = "";
@@ -534,17 +537,28 @@ add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_direct
 //If we're on the profile page, only show that member's marker
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){
 
-	if( isset( $_REQUEST['pu'] ) ){
+	global $wp_query;
+
+	if( !empty( $wp_query->get( 'pu' ) ) ) {
+		$pu = sanitize_text_field( $wp_query->get( 'pu' ) );
+	} else { 
+		if( !empty( $_REQUEST['pu'] ) ) {
+			$pu = sanitize_text_field( $_REQUEST['pu'] );
+		}
+	}
+
+	if( !empty( $pu ) ){
 
 	    //Get the profile user - doing this helps when profile's nicenames look like email addresses. This caused issues in the past.
-		if(!empty($_REQUEST['pu']) && is_numeric($_REQUEST['pu']))
-			$pu = get_user_by('id', $_REQUEST['pu']);
-		elseif(!empty($_REQUEST['pu']))
-			$pu = get_user_by('slug', $_REQUEST['pu']);
-		elseif(!empty($current_user->ID))
+		if( !empty( $pu ) && is_numeric( $pu ) ) {
+			$pu = get_user_by('id',  $pu );
+		} elseif( !empty( $pu ) ) {
+			$pu = get_user_by('slug',  $pu );
+		} elseif( !empty( $current_user->ID ) ) {
 			$pu = $current_user;
-		else
+		} else {
 			$pu = false;		
+		}
 
 		if( $pu ){
 
@@ -700,5 +714,26 @@ function pmpromm_report_geocode_api_error( $response ){
 		}
 
 	}
+
+}
+
+/**
+ * Decides how the profile URL should be formatted if the Member Directory is active
+ */
+function pmpromm_profile_url( $pu, $profile_url ) {
+
+	if( function_exists( 'pmpromd_build_profile_url' ) ) {
+		/**
+		 * Use the new permalink structure that gets used in Member Directory
+		 * $pu comes in as an array - we cast it into an object so it works with the
+		 * ret of member directory functions
+		 */
+		
+		return esc_url( pmpromd_build_profile_url( (object)$pu, $profile_url ) );
+		
+	} else {
+		//Stick to how we've always done it
+		return add_query_arg( 'pu', $pu['user_nicename'], $profile_url );
+	}		
 
 }

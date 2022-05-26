@@ -562,7 +562,7 @@ function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, 
 
 		if( $pu ){
 
-		    $member = sanitize_text_field( $pu->data->user_email );
+		    $member = sanitize_email( $pu->data->user_email );
 
 			$sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql($member) . "' ) ";
 			

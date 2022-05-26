@@ -737,3 +737,77 @@ function pmpromm_profile_url( $pu, $profile_url ) {
 	}		
 
 }
+
+/**
+ * Geocodebilling fields when saving/updating the Edit Profile page (frontend)
+ *
+ * @since TBD
+ *
+ * @return void
+ */
+function pmpro_geocode_billing_address_fields_frontend( $user_id ){
+
+	if( !function_exists( 'pmpromm_geocode_address' ) ){
+		return;
+	}
+
+	$member_address = array(
+		'street' =>  ( !empty( $_REQUEST['street_name'] ) ) ? $_REQUEST['street_name'] : get_user_meta( $user_id, 'street_name', true ),
+		'city' => ( !empty( $_REQUEST['city_name'] ) ) ? $_REQUEST['city_name'] : get_user_meta( $user_id, 'city_name', true ),
+		'zip' => ( !empty( $_REQUEST['zip_code'] ) ) ? $_REQUEST['zip_code'] : get_user_meta( $user_id, 'zip_code', true ),
+		'country' => ( !empty( $_REQUEST['country'] ) ) ? $_REQUEST['country'] : get_user_meta( $user_id, 'country', true )
+	);
+
+	/**
+	 *The billing address fields used on the profile edit pages
+	 * 
+	 * @param array $member_address The array containing the address
+	 */
+	$member_address = apply_filters( 'pmpromm_profile_billing_address_fields', $member_address );
+
+	$coordinates = pmpromm_geocode_address( $member_address );
+
+	if( is_array( $coordinates ) ){
+		update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
+		update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
+	}
+
+}
+add_action( 'pmpro_personal_options_update', 'pmpro_geocode_billing_address_fields_frontend', 10, 1 );
+
+/**
+ * Geocodebilling fields when saving/updating the Edit Profile page (WP Admin)
+ *
+ * @since TBD
+ *
+ * @return void
+ */
+function pmpro_geocode_billing_address_fields_profile_update(){
+
+	if( !empty( $_REQUEST['from'] ) && $_REQUEST['from'] == 'profile' ){
+
+		$member_address = array(
+			'street' =>  ( !empty( $_REQUEST['street_name'] ) ) ? $_REQUEST['street_name'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'street_name', true ),
+			'city' => ( !empty( $_REQUEST['city_name'] ) ) ? $_REQUEST['city_name'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'city_name', true ),
+			'zip' => ( !empty( $_REQUEST['zip_code'] ) ) ? $_REQUEST['zip_code'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'zip_code', true ),
+			'country' => ( !empty( $_REQUEST['country'] ) ) ? $_REQUEST['country'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'country', true )
+		);
+
+		/**
+		 * The billing address fields used on the profile edit pages
+		 * 
+		 * @param array $member_address The array containing the address
+		 */
+		$member_address = apply_filters( 'pmpromm_profile_billing_address_fields', $member_address );
+
+		$coordinates = pmpromm_geocode_address( $member_address );
+
+		if( is_array( $coordinates ) ){
+			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lat', $coordinates['lat'] );
+			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lng', $coordinates['lng'] );
+		}
+
+	}
+
+}
+add_action( 'admin_init', 'pmpro_geocode_billing_address_fields_profile_update' );

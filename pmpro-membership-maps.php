@@ -752,10 +752,10 @@ function pmpro_geocode_billing_address_fields_frontend( $user_id ){
 	}
 
 	$member_address = array(
-		'street' =>  ( !empty( $_REQUEST['street_name'] ) ) ? $_REQUEST['street_name'] : get_user_meta( $user_id, 'street_name', true ),
-		'city' => ( !empty( $_REQUEST['city_name'] ) ) ? $_REQUEST['city_name'] : get_user_meta( $user_id, 'city_name', true ),
-		'zip' => ( !empty( $_REQUEST['zip_code'] ) ) ? $_REQUEST['zip_code'] : get_user_meta( $user_id, 'zip_code', true ),
-		'country' => ( !empty( $_REQUEST['country'] ) ) ? $_REQUEST['country'] : get_user_meta( $user_id, 'country', true )
+		'street' =>  !empty( $_REQUEST['street_name'] ) ? sanitize_text_field( $_REQUEST['street_name'] ) : get_user_meta( $user_id, 'street_name', true ),
+		'city' => !empty( $_REQUEST['city_name'] ) ? sanitize_text_field( $_REQUEST['city_name'] ) : get_user_meta( $user_id, 'city_name', true ),
+		'zip' => !empty( $_REQUEST['zip_code'] ) ? sanitize_text_field( $_REQUEST['zip_code'] ) : get_user_meta( $user_id, 'zip_code', true ),
+		'country' => !empty( $_REQUEST['country'] ) ? sanitize_text_field( $_REQUEST['country'] ) : get_user_meta( $user_id, 'country', true )
 	);
 
 	/**
@@ -768,8 +768,8 @@ function pmpro_geocode_billing_address_fields_frontend( $user_id ){
 	$coordinates = pmpromm_geocode_address( $member_address );
 
 	if( is_array( $coordinates ) ){
-		update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
-		update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
+		update_user_meta( $user_id, 'pmpro_lat', floatval( $coordinates['lat'] ) );
+		update_user_meta( $user_id, 'pmpro_lng', floatval( $coordinates['lng'] ) );
 	}
 
 }
@@ -787,10 +787,10 @@ function pmpro_geocode_billing_address_fields_profile_update(){
 	if( !empty( $_REQUEST['from'] ) && $_REQUEST['from'] == 'profile' ){
 
 		$member_address = array(
-			'street' =>  ( !empty( $_REQUEST['street_name'] ) ) ? $_REQUEST['street_name'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'street_name', true ),
-			'city' => ( !empty( $_REQUEST['city_name'] ) ) ? $_REQUEST['city_name'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'city_name', true ),
-			'zip' => ( !empty( $_REQUEST['zip_code'] ) ) ? $_REQUEST['zip_code'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'zip_code', true ),
-			'country' => ( !empty( $_REQUEST['country'] ) ) ? $_REQUEST['country'] : get_user_meta( intval( $_REQUEST['user_id'] ), 'country', true )
+			'street' =>  !empty( $_REQUEST['street_name'] ) ? sanitize_text_field( $_REQUEST['street_name'] ) : get_user_meta( $user_id, 'street_name', true ),
+			'city' => !empty( $_REQUEST['city_name'] ) ? sanitize_text_field( $_REQUEST['city_name'] ) : get_user_meta( $user_id, 'city_name', true ),
+			'zip' => !empty( $_REQUEST['zip_code'] ) ? sanitize_text_field( $_REQUEST['zip_code'] ) : get_user_meta( $user_id, 'zip_code', true ),
+			'country' => !empty( $_REQUEST['country'] ) ? sanitize_text_field( $_REQUEST['country'] ) : get_user_meta( $user_id, 'country', true )
 		);
 
 		/**
@@ -803,8 +803,8 @@ function pmpro_geocode_billing_address_fields_profile_update(){
 		$coordinates = pmpromm_geocode_address( $member_address );
 
 		if( is_array( $coordinates ) ){
-			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lat', $coordinates['lat'] );
-			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lng', $coordinates['lng'] );
+			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lat', floatval( $coordinates['lat'] ) );
+			update_user_meta( intval( $_REQUEST['user_id'] ), 'pmpro_lng', floatval( $coordinates['lng'] ) );
 		}
 
 	}

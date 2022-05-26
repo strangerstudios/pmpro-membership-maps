@@ -562,9 +562,9 @@ function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, 
 
 		if( $pu ){
 
-		    $member = sanitize_text_field( $pu->data->user_login );
+		    $member = sanitize_text_field( $pu->data->user_email );
 
-			$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($member) . "%' OR u.user_email LIKE '%" . esc_sql($member) . "%' OR u.display_name LIKE '%" . esc_sql($member) . "%' OR um.meta_value LIKE '%" . esc_sql($member) . "%') ";
+			$sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql($member) . "' ) ";
 			
 		}
 
@@ -730,7 +730,7 @@ function pmpromm_profile_url( $pu, $profile_url ) {
 		 */
 		
 		return esc_url( pmpromd_build_profile_url( (object)$pu, $profile_url ) );
-		
+
 	} else {
 		//Stick to how we've always done it
 		return add_query_arg( 'pu', $pu['user_nicename'], $profile_url );

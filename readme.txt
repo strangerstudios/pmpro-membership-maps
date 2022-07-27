@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Membership Maps Add On ===
 Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
-Requires at least: 3.5
-Tested up to: 5.5
-Stable tag: 0.2
+Requires at least: 5.0
+Tested up to: 6.0
+Stable tag: 0.4
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,13 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.4 2022-07-27 =
+* SECURITY: Improved sanitization and escaping of variables.
+* ENHANCEMENT: Improved support for Membership Directory V1.2+.
+* ENHANCEMENT: Improved the map logic on the single profile view of the Member Directory to show only the person in question marker.
+* ENHANCEMENT: Improved the spacing around the map on the frontend.
+* BUG FIX: Fixed an issue where 'show_avatar' in Membership Directory was always showing regardless of attribute value (@aquiferweb)
 
 = 0.3 2021-06-09 =
 * ENHANCEMENT: Added in support for Zoom levels for map. New filter 'pmpromm_default_zoom_level'.

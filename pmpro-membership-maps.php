@@ -454,15 +454,57 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'description' => __( 'Used by the Membership Maps Add On.', 'pmpro-membership-maps')
 	);
 
+	$fields['pmpromm_api_key_status'] = array(
+		'field_name' => 'pmpromm_api_key_status',
+		'field_type' => 'text',
+		'label' => __( 'Google Maps API Key Status', 'pmpro-membership-maps' ),
+	);
+
 	if( defined( 'PMPRO_VERSION' ) ){
 		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
-			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>' );
+
+			$test_url = wp_nonce_url( admin_url( 'admin.php?page=pmpro-advancedsettings&pmpromm_test_api_key=true' ), 'pmpromm_test_api_key', 'pmpromm_api_key_nonce' );
+
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<strong><a href="'.$test_url.'" target="_BLANK">'.__( 'Test API Key', 'pmpro-membership-maps' ).'</a></strong>' );
 		}
 	}
 
 	return $fields;
 }
 add_filter('pmpro_custom_advanced_settings','pmpromm_advanced_settings_field', 20);
+
+function pmpromm_test_api_key() {
+
+	if( ! empty( $_REQUEST['pmpromm_test_api_key'] ) ) {
+
+		if( wp_verify_nonce( $_REQUEST['pmpromm_api_key_nonce'], 'pmpromm_test_api_key' ) ) {
+
+			/**
+			 * This is a sample address used to test if the API key entered works as expected. 
+			 */
+			$member_address = array(
+				'street' 	=> '1313 Disneyland Drive',
+				'city' 		=> 'Anaheim',
+				'state' 	=> 'CA',
+				'zip' 		=> '92802'
+			);
+
+			$geocoded_result = pmpromm_geocode_address( $member_address, false, true );
+
+			if( $geocoded_result->status == 'OK' ) {
+				echo sprintf( '<p><strong>%s</strong>: %s</p>', $geocoded_result->status, __('API Key test complete without issues', 'pmpro-membership-maps' ) );
+			} else {
+				echo sprintf( '<p><strong>%s</strong>: %s</p>', $geocoded_result->status, $geocoded_result->error_message );
+			}			
+			
+			exit( __('Paid Memberships Pro - Membership Maps API Test Complete', 'pmpro-membership-maps' ) );	
+		
+		}
+		
+	}
+
+}
+add_action( 'admin_init', 'pmpromm_test_api_key' );
 
 /*
 Function to add links to the plugin row meta
@@ -641,7 +683,7 @@ function pmpromm_get_element_class( $class, $element = null ){
 	return $class;
 }
 
-function pmpromm_geocode_address( $addr_array, $morder = false ){
+function pmpromm_geocode_address( $addr_array, $morder = false, $return_body = false ){
 
 	$address_string = implode( ", ", array_filter( $addr_array ) );
 
@@ -657,6 +699,10 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 		$request_body = wp_remote_retrieve_body( $remote_request );
 
 		$request_body = json_decode( $request_body );
+
+		if( $return_body ) {
+			return $request_body;
+		}
 
 		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
 

@@ -343,7 +343,13 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 									$cf_field[$current_field_key] = $rh_fields[$field[1]][$current_field_val];
 								}
 							} else {
-								$cf_field[] = $current_field_val;
+								$current_field_val = maybe_unserialize( $current_field_val );
+								if( is_array( $current_field_val ) ) {
+									//Adds support for serialized fields (typically multiselect)
+									$cf_field[] = implode( ", ", $current_field_val );
+								} else {
+									$cf_field[] = $current_field_val;	
+								}
 							}
 							$rhfield_content .= '<strong>'.$current_field_key.'</strong> ';
 							$rhfield_content .= implode(", ",$cf_field);

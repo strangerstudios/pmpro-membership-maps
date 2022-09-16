@@ -737,3 +737,38 @@ function pmpromm_profile_url( $pu, $profile_url ) {
 	}		
 
 }
+
+/**
+ * Geocode the address before we leave the checkout page
+ * @param  int $user_id User ID
+ * @return void
+ */
+function pmpromm_geocode_address_before_level_change( $user_id ) {
+
+	global $gateway;
+
+	//Only run if we're using Stripe - this covers any issues with Stripe Checkout.
+	if ( strpos( $gateway, 'stripe' ) === false ) {
+		return;
+	}
+
+	$member_address = array(
+		'street' 	=> $_REQUEST['baddress1'].' '.$_REQUEST['baddress2'],
+		'city' 		=> $_REQUEST['bcity'],
+		'state' 	=> $_REQUEST['bstate'],
+		'zip' 		=> $_REQUEST['bzipcode']
+	);
+
+	$member_address = apply_filters( 'pmpromm_member_address_before_change_membership', $member_address, $user_id );
+
+	$coordinates = pmpromm_geocode_address( $member_address );
+
+	if ( is_array( $coordinates ) ) {
+		if ( !empty( $coordinates['lat'] ) && !empty( $coordinates['lng'] ) ) {
+			update_user_meta( $user_id, 'pmpro_lat', $coordinates['lat'] );
+			update_user_meta( $user_id, 'pmpro_lng', $coordinates['lng'] );
+		}
+	}
+
+}
+add_action( 'pmpro_checkout_before_change_membership_level', 'pmpromm_geocode_address_before_level_change', 1 );

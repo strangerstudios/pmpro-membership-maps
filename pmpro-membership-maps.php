@@ -454,18 +454,10 @@ function pmpromm_advanced_settings_field( $fields ) {
 		'description' => __( 'Used by the Membership Maps Add On.', 'pmpro-membership-maps')
 	);
 
-	$fields['pmpromm_api_key_status'] = array(
-		'field_name' => 'pmpromm_api_key_status',
-		'field_type' => 'text',
-		'label' => __( 'Google Maps API Key Status', 'pmpro-membership-maps' ),
-	);
-
 	if( defined( 'PMPRO_VERSION' ) ){
 		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
 
-			$test_url = wp_nonce_url( admin_url( 'admin.php?page=pmpro-advancedsettings&pmpromm_test_api_key=true' ), 'pmpromm_test_api_key', 'pmpromm_api_key_nonce' );
-
-			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<strong><a href="'.$test_url.'" target="_BLANK">'.__( 'Test API Key', 'pmpro-membership-maps' ).'</a></strong>' );
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', __( 'API Key Status', 'pmpro-membership-maps' ).': '.pmpro_getOption( 'pmpromm_api_key_status' ) );
 		}
 	}
 
@@ -473,11 +465,21 @@ function pmpromm_advanced_settings_field( $fields ) {
 }
 add_filter('pmpro_custom_advanced_settings','pmpromm_advanced_settings_field', 20);
 
+/**
+ * Test the API key upon saving the PMPro Advanced Settings.
+
+ * @return void
+ */
 function pmpromm_test_api_key() {
 
-	if( ! empty( $_REQUEST['pmpromm_test_api_key'] ) ) {
+	if( ! empty( $_REQUEST['pmpromm_api_key'] ) && current_user_can( 'manage_options' ) ) {
 
-		if( wp_verify_nonce( $_REQUEST['pmpromm_api_key_nonce'], 'pmpromm_test_api_key' ) ) {
+		$current_key = pmpro_getOption( 'pmpromm_api_key' );
+
+		$new_key = sanitize_text_field( $_REQUEST['pmpromm_api_key'] );
+
+		//API Key has changed, lets test if it works
+		if( $new_key !== $current_key ) {
 
 			/**
 			 * This is a sample address used to test if the API key entered works as expected. 
@@ -488,23 +490,61 @@ function pmpromm_test_api_key() {
 				'state' 	=> 'CA',
 				'zip' 		=> '92802'
 			);
-
-			$geocoded_result = pmpromm_geocode_address( $member_address, false, true );
-
-			if( $geocoded_result->status == 'OK' ) {
-				echo sprintf( '<p><strong>%s</strong>: %s</p>', $geocoded_result->status, __('API Key test complete without issues', 'pmpro-membership-maps' ) );
-			} else {
-				echo sprintf( '<p><strong>%s</strong>: %s</p>', $geocoded_result->status, $geocoded_result->error_message );
-			}			
 			
-			exit( __('Paid Memberships Pro - Membership Maps API Test Complete', 'pmpro-membership-maps' ) );	
-		
+			add_filter( 'pmpromm_geocoding_api_key', 'pmpromm_use_api_key_on_save' );
+			$geocoded_result = pmpromm_geocode_address( $member_address, false, true );
+			remove_filter( 'pmpromm_geocoding_api_key', 'pmpromm_use_api_key_on_save' );
+			
+			if( $geocoded_result->status == 'OK' ) {
+				pmpro_setOption( 'pmpromm_api_key_status', 'OK' );				
+			} else {
+				pmpro_setOption( 'pmpromm_api_key_status', $geocoded_result->status.' '.$geocoded_result->error_message );				
+			}			
+				
+
 		}
-		
+
 	}
 
 }
 add_action( 'admin_init', 'pmpromm_test_api_key' );
+
+/**
+ * Sets the geocoding API key to the $_REQUEST value instead of a stored value
+ * @param  string $api_key The current API Key
+ * @return string The API key found in the $_REQUEST var
+ */
+function pmpromm_use_api_key_on_save( $api_key ) {
+
+	if ( ! empty( $_REQUEST['pmpromm_api_key'] ) ) {
+		$api_key = sanitize_text_field( $_REQUEST['pmpromm_api_key'] );
+	}
+
+	return $api_key;
+}
+
+/**
+ * Adds the API key status to site health
+ *
+ * @param array $fields The site health fields
+ */
+function pmpromm_sitehealth_information( $fields ) {
+
+	if( ! isset( $fields['pmpro'] ) ) {
+		return $fields;
+	}
+
+	$map_data = array( 'pmpromm-api-key-status' => array(
+		'label' => __( 'Membership Maps API Key Status', 'paid-memberships-pro' ),
+		'value' => pmpro_getOption( 'pmpromm_api_key_status' ),
+	) );
+
+	$fields['pmpro']['fields'] = array_merge( $fields['pmpro']['fields'], $map_data );
+
+	return $fields;
+
+}
+add_filter( 'debug_information', 'pmpromm_sitehealth_information', 11, 1 );
 
 /*
 Function to add links to the plugin row meta

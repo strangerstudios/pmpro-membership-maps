@@ -351,16 +351,16 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 									$cf_field[] = $current_field_val;	
 								}
 							}
-							$rhfield_content .= '<strong>'.$current_field_key.'</strong> ';
-							$rhfield_content .= implode(", ",$cf_field);
+							$rhfield_content .= '<strong>' . esc_html( $current_field_key ) . '</strong> ';
+							$rhfield_content .= wp_kses_post( implode( ', ',$cf_field ) );
 						} elseif ( !empty( $rh_fields[$field[1]] ) && is_array( $rh_fields[$field[1]] ) ) {
-							$rhfield_content .= '<strong>'.$current_field_val.'</strong>';
-							$rhfield_content .= $rh_fields[$field[1]][$current_field];
+							$rhfield_content .= '<strong>' . esc_html( $current_field_val ) . '</strong>';
+							$rhfield_content .= wp_kses_post( $rh_fields[$field[1]][$current_field] );
 						} elseif ( $field[1] == 'user_url' ){
-							$rhfield_content .= '<a href="'.$member[$field[1]].'" target="_blank">'.$field[0].'</a>';
+							$rhfield_content .= '<a href="' . esc_url( $member[$field[1]] ) . '" target="_blank">' . esc_html( $field[0] ) . '</a>';
 						} else {
-							$rhfield_content .= '<strong>'.$field[0].':</strong>';
-							$rhfield_content .= make_clickable($member[$field[1]]);
+							$rhfield_content .= '<strong>' . esc_html( $field[0] ) . ':</strong>';
+							$rhfield_content .= make_clickable( $member[$field[1]] );
 						}
 
 						$rhfield_content .= '</p>';

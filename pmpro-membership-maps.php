@@ -456,13 +456,96 @@ function pmpromm_advanced_settings_field( $fields ) {
 
 	if( defined( 'PMPRO_VERSION' ) ){
 		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
-			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>' );
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">' . __( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<br/><code>' . __( 'API Key Status', 'pmpro-membership-maps' ).': ' . pmpro_getOption( 'pmpromm_api_key_status' ) ) . '</code>';
 		}
 	}
 
 	return $fields;
 }
 add_filter('pmpro_custom_advanced_settings','pmpromm_advanced_settings_field', 20);
+
+/**
+ * Test the API key upon saving the PMPro Advanced Settings.
+
+ * @return void
+ */
+function pmpromm_test_api_key() {
+
+	if( ! empty( $_REQUEST['pmpromm_api_key'] ) && current_user_can( 'manage_options' ) ) {
+
+		$current_key = pmpro_getOption( 'pmpromm_api_key' );
+
+		$new_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
+
+		$api_key_status = pmpro_getOption( 'pmpromm_api_key_status' );
+
+		//API key differs or the status is not OK, let's test the key.
+		if ( $new_key !== $current_key || $api_key_status !== 'OK' ) {
+
+			/**
+			 * This is a sample address used to test if the API key entered works as expected. 
+			 */
+			$member_address = array(
+				'street' 	=> '1313 Disneyland Drive',
+				'city' 		=> 'Anaheim',
+				'state' 	=> 'CA',
+				'zip' 		=> '92802'
+			);
+			
+			add_filter( 'pmpromm_geocoding_api_key', 'pmpromm_use_api_key_on_save' );
+			$geocoded_result = pmpromm_geocode_address( $member_address, false, true );
+			
+			if( $geocoded_result->status == 'OK' ) {
+				pmpro_setOption( 'pmpromm_api_key_status', 'OK' );				
+			} else {
+				$status = sanitize_text_field( $geocoded_result->status . ' ' . $geocoded_result->error_message );
+				pmpro_setOption( 'pmpromm_api_key_status', $status );
+			}			
+				
+
+		}
+
+	}
+
+}
+add_action( 'admin_init', 'pmpromm_test_api_key' );
+
+/**
+ * Sets the geocoding API key to the $_REQUEST value instead of a stored value
+ * @param  string $api_key The current API Key
+ * @return string The API key found in the $_REQUEST var
+ */
+function pmpromm_use_api_key_on_save( $api_key ) {
+
+	if ( ! empty( $_REQUEST['pmpromm_api_key'] ) ) {
+		$api_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
+	}
+
+	return $api_key;
+}
+
+/**
+ * Adds the API key status to site health
+ *
+ * @param array $fields The site health fields
+ */
+function pmpromm_sitehealth_information( $fields ) {
+
+	if( ! isset( $fields['pmpro'] ) ) {
+		return $fields;
+	}
+
+	$map_data = array( 'pmpromm-api-key-status' => array(
+		'label' => __( 'Membership Maps API Key Status', 'paid-memberships-pro' ),
+		'value' => esc_html( pmpro_getOption( 'pmpromm_api_key_status' ) ),
+	) );
+
+	$fields['pmpro']['fields'] = array_merge( $fields['pmpro']['fields'], $map_data );
+
+	return $fields;
+
+}
+add_filter( 'debug_information', 'pmpromm_sitehealth_information', 11, 1 );
 
 /*
 Function to add links to the plugin row meta
@@ -641,7 +724,7 @@ function pmpromm_get_element_class( $class, $element = null ){
 	return $class;
 }
 
-function pmpromm_geocode_address( $addr_array, $morder = false ){
+function pmpromm_geocode_address( $addr_array, $morder = false, $return_body = false ){
 
 	$address_string = implode( ", ", array_filter( $addr_array ) );
 
@@ -657,6 +740,10 @@ function pmpromm_geocode_address( $addr_array, $morder = false ){
 		$request_body = wp_remote_retrieve_body( $remote_request );
 
 		$request_body = json_decode( $request_body );
+
+		if( $return_body ) {
+			return $request_body;
+		}
 
 		if( !empty( $request_body->status ) && $request_body->status == 'OK' ){
 

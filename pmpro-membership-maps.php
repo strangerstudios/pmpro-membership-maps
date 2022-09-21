@@ -476,10 +476,11 @@ function pmpromm_test_api_key() {
 
 		$current_key = pmpro_getOption( 'pmpromm_api_key' );
 
-		$new_key = sanitize_text_field( $_REQUEST['pmpromm_api_key'] );
+		$new_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
 
+		$api_key_status = pmpro_getOption( 'pmpromm_api_key_status' );
 		//API Key has changed, lets test if it works
-		if( $new_key !== $current_key ) {
+		if( $new_key !== $current_key || empty( $api_key_status ) ) {
 
 			/**
 			 * This is a sample address used to test if the API key entered works as expected. 
@@ -493,7 +494,6 @@ function pmpromm_test_api_key() {
 			
 			add_filter( 'pmpromm_geocoding_api_key', 'pmpromm_use_api_key_on_save' );
 			$geocoded_result = pmpromm_geocode_address( $member_address, false, true );
-			remove_filter( 'pmpromm_geocoding_api_key', 'pmpromm_use_api_key_on_save' );
 			
 			if( $geocoded_result->status == 'OK' ) {
 				pmpro_setOption( 'pmpromm_api_key_status', 'OK' );				
@@ -517,7 +517,7 @@ add_action( 'admin_init', 'pmpromm_test_api_key' );
 function pmpromm_use_api_key_on_save( $api_key ) {
 
 	if ( ! empty( $_REQUEST['pmpromm_api_key'] ) ) {
-		$api_key = sanitize_text_field( $_REQUEST['pmpromm_api_key'] );
+		$api_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
 	}
 
 	return $api_key;

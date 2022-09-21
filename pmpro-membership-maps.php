@@ -456,8 +456,7 @@ function pmpromm_advanced_settings_field( $fields ) {
 
 	if( defined( 'PMPRO_VERSION' ) ){
 		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
-
-			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">'.__( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', __( 'API Key Status', 'pmpro-membership-maps' ).': '.pmpro_getOption( 'pmpromm_api_key_status' ) );
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">' . __( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<br/><code>' . __( 'API Key Status', 'pmpro-membership-maps' ).': ' . pmpro_getOption( 'pmpromm_api_key_status' ) ) . '</code>';
 		}
 	}
 
@@ -479,8 +478,9 @@ function pmpromm_test_api_key() {
 		$new_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
 
 		$api_key_status = pmpro_getOption( 'pmpromm_api_key_status' );
-		//API Key has changed, lets test if it works
-		if( $new_key !== $current_key || empty( $api_key_status ) ) {
+
+		//API key differs or the status is not OK, let's test the key.
+		if ( $new_key !== $current_key || $api_key_status !== 'OK' ) {
 
 			/**
 			 * This is a sample address used to test if the API key entered works as expected. 
@@ -498,7 +498,8 @@ function pmpromm_test_api_key() {
 			if( $geocoded_result->status == 'OK' ) {
 				pmpro_setOption( 'pmpromm_api_key_status', 'OK' );				
 			} else {
-				pmpro_setOption( 'pmpromm_api_key_status', $geocoded_result->status.' '.$geocoded_result->error_message );				
+				$status = sanitize_text_field( $geocoded_result->status . ' ' . $geocoded_result->error_message );
+				pmpro_setOption( 'pmpromm_api_key_status', $status );
 			}			
 				
 
@@ -536,7 +537,7 @@ function pmpromm_sitehealth_information( $fields ) {
 
 	$map_data = array( 'pmpromm-api-key-status' => array(
 		'label' => __( 'Membership Maps API Key Status', 'paid-memberships-pro' ),
-		'value' => pmpro_getOption( 'pmpromm_api_key_status' ),
+		'value' => esc_html( pmpro_getOption( 'pmpromm_api_key_status' ) ),
 	) );
 
 	$fields['pmpro']['fields'] = array_merge( $fields['pmpro']['fields'], $map_data );

@@ -351,16 +351,18 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 									//Adds support for serialized fields (typically multiselect)
 									$cf_field[] = implode( ", ", $current_field_val );
 								} else {
+									// Check if the field is a valid URL and then try to make it clickable.
+									if ( wp_http_validate_url( $current_field_val ) ) {
+										$current_field_val = make_clickable( $current_field_val );
+									}
 									$cf_field[] = $current_field_val;	
 								}
 							}
 							$rhfield_content .= '<strong>' . esc_html( $current_field_key ) . '</strong> ';
-							$rhfield_content .= wp_kses_post( implode( ', ',$cf_field ) );
+							$rhfield_content .= wp_kses_post( implode( ', ', $cf_field ) );
 						} elseif ( !empty( $rh_fields[$field[1]] ) && is_array( $rh_fields[$field[1]] ) ) {
 							$rhfield_content .= '<strong>' . esc_html( $current_field_val ) . '</strong>';
 							$rhfield_content .= wp_kses_post( $rh_fields[$field[1]][$current_field] );
-						} elseif ( $field[1] == 'user_url' ){
-							$rhfield_content .= '<a href="' . esc_url( $member[$field[1]] ) . '" target="_blank">' . esc_html( $field[0] ) . '</a>';
 						} else {
 							$rhfield_content .= '<strong>' . esc_html( $field[0] ) . ':</strong>';
 							$rhfield_content .= make_clickable( $member[$field[1]] );

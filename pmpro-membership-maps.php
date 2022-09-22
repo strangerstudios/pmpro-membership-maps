@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Membership Maps Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/membership-maps/
  * Description: Display a map of members or for a single member's profile.
- * Version: 0.4
+ * Version: 0.5
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-membership-maps
@@ -839,7 +839,7 @@ function pmpromm_profile_url( $pu, $profile_url ) {
 /**
  * Geocodebilling fields when saving/updating a user profile
  *
- * @since TBD
+ * @since 0.5
  */
 function pmpro_geocode_billing_address_fields_frontend( $user_id ){
 

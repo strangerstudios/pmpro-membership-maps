@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 5.0
 Tested up to: 6.0
-Stable tag: 0.4
+Stable tag: 0.5
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.5 - 2022-09-22 =
+* ENHANCEMENT: Test the API request whenever saving a new API Key to ensure it's all setup correctly.
+* ENHANCEMENT: Improved functionality and sanitzation of custom fields in marker windows. URL values now are clickable.
+* ENHANCEMENT: Geocode user address whenever their profile is saved or updated and billing fields are present on the edit user/profile page.
 
 = 0.4 2022-07-27 =
 * SECURITY: Improved sanitization and escaping of variables.

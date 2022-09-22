@@ -784,7 +784,7 @@ function pmpro_geocode_billing_address_fields_frontend( $user_id ){
 	 * @param array $member_address The array containing the address to geocode. See example:
 	 * 
 	 * $member_address = array(
-	 *  'street' 	=> '1313 Disneyland Drive',
+	 *	'street' 	=> '1313 Disneyland Drive',
 	 *	'city' 		=> 'Anaheim',
 	 *	'state' 	=> 'CA',
 	 *	'zip' 		=> '92802',

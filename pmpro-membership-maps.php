@@ -824,3 +824,69 @@ function pmpromm_profile_url( $pu, $profile_url ) {
 	}		
 
 }
+
+/**
+ * Geocodebilling fields when saving/updating a user profile
+ *
+ * @since TBD
+ */
+function pmpro_geocode_billing_address_fields_frontend( $user_id ){
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	if ( !function_exists( 'pmpromm_geocode_address' ) ){
+		return;
+	}
+
+	if ( empty( $_REQUEST['pmpro_baddress1'] ) ) {
+		return;
+	}
+
+	// Get the address for each field.
+	$pmpro_baddress1 = ! empty( $_REQUEST['pmpro_baddress1'] ) ? sanitize_text_field( $_REQUEST['pmpro_baddress1'] ) : '';
+	$pmpro_baddress2 = ! empty( $_REQUEST['pmpro_baddress2'] ) ? sanitize_text_field( $_REQUEST['pmpro_baddress2'] ) : '';
+	$pmpro_bcity = ! empty( $_REQUEST['pmpro_bcity'] ) ? sanitize_text_field( $_REQUEST['pmpro_bcity'] ) : '';
+	$pmpro_bzipcode = ! empty( $_REQUEST['pmpro_bzipcode'] ) ? sanitize_text_field( $_REQUEST['pmpro_bzipcode'] ) : '';
+	$pmpro_bcountry = ! empty( $_REQUEST['pmpro_bcountry'] ) ? sanitize_text_field( $_REQUEST['pmpro_bcountry'] ) : '';
+
+	// If the first address is empty, bail.
+	if ( empty( $pmpro_baddress1 ) ) {
+		return;
+	}
+
+	$member_address = array(
+		'street' => $pmpro_baddress1 . ', ' . $pmpro_baddress2,
+		'city' => $pmpro_bcity,
+		'zip' => $pmpro_bzipcode,
+		'country' => $pmpro_bcountry
+	);
+
+	/**
+	 * The billing address fields used to geocode whenever the users profile is updated and billing fields are presented.
+	 * 
+	 * @param array $member_address The array containing the address to geocode. See example:
+	 * 
+	 * $member_address = array(
+	 *	'street' 	=> '1313 Disneyland Drive',
+	 *	'city' 		=> 'Anaheim',
+	 *	'state' 	=> 'CA',
+	 *	'zip' 		=> '92802',
+	 *	'country'	=> 'US'
+	 * );
+	 * 
+	 */
+	$member_address = apply_filters( 'pmpromm_profile_billing_address_fields', $member_address );
+
+	$coordinates = pmpromm_geocode_address( $member_address );
+
+	if ( is_array( $coordinates ) ) {
+		update_user_meta( $user_id, 'pmpro_lat', floatval( $coordinates['lat'] ) );
+		update_user_meta( $user_id, 'pmpro_lng', floatval( $coordinates['lng'] ) );
+	}
+
+}
+add_action( 'pmpro_personal_options_update', 'pmpro_geocode_billing_address_fields_frontend', 10, 1 );
+add_action( 'personal_options_update', 'pmpro_geocode_billing_address_fields_frontend', 10, 1 );
+add_action( 'edit_user_profile_update', 'pmpro_geocode_billing_address_fields_frontend', 10, 1 );

@@ -742,8 +742,6 @@ function pmpromm_profile_url( $pu, $profile_url ) {
  * Geocodebilling fields when saving/updating a user profile
  *
  * @since TBD
- *
- * @return void
  */
 function pmpro_geocode_billing_address_fields_frontend( $user_id ){
 

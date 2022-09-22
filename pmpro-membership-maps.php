@@ -101,7 +101,7 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 
 	$sql_parts = array();
 
-	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
+	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
 
 	$sql_parts['JOIN'] = "
 	LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id 
@@ -252,7 +252,6 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$member['meta'] = get_user_meta( $member['ID'] );
 
-
 			if( !empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );
 			}
@@ -325,10 +324,14 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 						break;
 					}
 
-					if( !empty( $member['meta'][$field[1]] ) ){
+					if( !empty( $member['meta'][$field[1]] ) || !empty( $member[$field[1]] ) ){
 
 						$current_field_key = $field[0];
-						$current_field_val = reset( $member['meta'][$field[1]] );
+						if( isset( $member['meta'][$field[1]] ) ) {
+							$current_field_val = reset( $member['meta'][$field[1]] );
+						} else {
+							$current_field_val = $member[$field[1]];
+						}
 
 						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$current_field_key ).'">';
 						if( is_array( $field ) && !empty( $field['filename'] ) ){
@@ -343,18 +346,26 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 									$cf_field[$current_field_key] = $rh_fields[$field[1]][$current_field_val];
 								}
 							} else {
-								$cf_field[] = $current_field_val;
+								$current_field_val = maybe_unserialize( $current_field_val );
+								if( is_array( $current_field_val ) ) {
+									//Adds support for serialized fields (typically multiselect)
+									$cf_field[] = implode( ", ", $current_field_val );
+								} else {
+									// Check if the field is a valid URL and then try to make it clickable.
+									if ( wp_http_validate_url( $current_field_val ) ) {
+										$current_field_val = make_clickable( $current_field_val );
+									}
+									$cf_field[] = $current_field_val;	
+								}
 							}
-							$rhfield_content .= '<strong>'.$current_field_key.'</strong> ';
-							$rhfield_content .= implode(", ",$cf_field);
+							$rhfield_content .= '<strong>' . esc_html( $current_field_key ) . '</strong> ';
+							$rhfield_content .= wp_kses_post( implode( ', ', $cf_field ) );
 						} elseif ( !empty( $rh_fields[$field[1]] ) && is_array( $rh_fields[$field[1]] ) ) {
-							$rhfield_content .= '<strong>'.$current_field_val.'</strong>';
-							$rhfield_content .= $rh_fields[$field[1]][$current_field];
-						} elseif ( $field[1] == 'user_url' ){
-							$rhfield_content .= '<a href="'.$member[$field[1]].'" target="_blank">'.$field[0].'</a>';
+							$rhfield_content .= '<strong>' . esc_html( $current_field_val ) . '</strong>';
+							$rhfield_content .= wp_kses_post( $rh_fields[$field[1]][$current_field] );
 						} else {
-							$rhfield_content .= '<strong>'.$field[0].':</strong>';
-							$rhfield_content .= make_clickable($member[$field[1]]);
+							$rhfield_content .= '<strong>' . esc_html( $field[0] ) . ':</strong>';
+							$rhfield_content .= make_clickable( $member[$field[1]] );
 						}
 
 						$rhfield_content .= '</p>';

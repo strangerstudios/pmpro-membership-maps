@@ -48,7 +48,7 @@ function pmpromm_shortcode( $atts ){
 	//Get the marker data
 	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes, $start, $limit );
 
-	$api_key = pmpro_getOption( 'pmpromm_api_key' );
+	$api_key = get_option( 'pmpro_pmpromm_api_key' );
 
 	$libraries = apply_filters( 'pmpromm_google_maps_libraries', array() );
 
@@ -467,7 +467,7 @@ function pmpromm_advanced_settings_field( $fields ) {
 
 	if( defined( 'PMPRO_VERSION' ) ){
 		if( version_compare( PMPRO_VERSION, '2.4.2', '>=' ) ){
-			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">' . __( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<br/><code>' . __( 'API Key Status', 'pmpro-membership-maps' ).': ' . pmpro_getOption( 'pmpromm_api_key_status' ) ) . '</code>';
+			$fields['pmpromm_api_key']['description'] = sprintf( __( 'Used by the Membership Maps Add On. %s %s', 'pmpro-membership-maps' ), '<a href="https://www.paidmembershipspro.com/add-ons/membership-maps/#google-maps-api-key" target="_BLANK">' . __( 'Obtain Your Google Maps API Key', 'pmpro-membership-maps' ).'</a>', '<br/><code>' . __( 'API Key Status', 'pmpro-membership-maps' ).': ' . get_option( 'pmpro_pmpromm_api_key_status' ) ) . '</code>';
 		}
 	}
 
@@ -484,11 +484,11 @@ function pmpromm_test_api_key() {
 
 	if( ! empty( $_REQUEST['pmpromm_api_key'] ) && current_user_can( 'manage_options' ) ) {
 
-		$current_key = pmpro_getOption( 'pmpromm_api_key' );
+		$current_key = get_option( 'pmpro_pmpromm_api_key' );
 
 		$new_key = trim( sanitize_text_field( $_REQUEST['pmpromm_api_key'] ) );
 
-		$api_key_status = pmpro_getOption( 'pmpromm_api_key_status' );
+		$api_key_status = get_option( 'pmpro_pmpromm_api_key_status' );
 
 		//API key differs or the status is not OK, let's test the key.
 		if ( $new_key !== $current_key || $api_key_status !== 'OK' ) {
@@ -548,7 +548,7 @@ function pmpromm_sitehealth_information( $fields ) {
 
 	$map_data = array( 'pmpromm-api-key-status' => array(
 		'label' => __( 'Membership Maps API Key Status', 'paid-memberships-pro' ),
-		'value' => esc_html( pmpro_getOption( 'pmpromm_api_key_status' ) ),
+		'value' => esc_html( get_option( 'pmpro_pmpromm_api_key_status' ) ),
 	) );
 
 	$fields['pmpro']['fields'] = array_merge( $fields['pmpro']['fields'], $map_data );
@@ -741,7 +741,7 @@ function pmpromm_geocode_address( $addr_array, $morder = false, $return_body = f
 
 	$remote_request = wp_remote_get( 'https://maps.googleapis.com/maps/api/geocode/json', 
 		array( 'body' => array(
-			'key' 		=> apply_filters( 'pmpromm_geocoding_api_key', pmpro_getOption( 'pmpromm_api_key' ) ),
+			'key' 		=> apply_filters( 'pmpromm_geocoding_api_key', get_option( 'pmpro_pmpromm_api_key' ) ),
 			'address' 	=> $address_string
 		) ) 
 	);

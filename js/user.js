@@ -20,9 +20,12 @@ jQuery(document).ready(function(){
 		}
 	}
 	
+
+
 	var pmpromm_map_arguments = {
 		center: pmpromm_map_start,
-		zoom: parseInt( pmpromm_vars.zoom_level )
+		zoom: parseInt( pmpromm_vars.zoom_level ),
+		maxZoom: pmpromm_vars.max_zoom
 	};
 
 	//Initiating the map

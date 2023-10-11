@@ -101,7 +101,7 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 
 	$sql_parts = array();
 
-	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
+	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
 
 	$sql_parts['JOIN'] = "
 	LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id 
@@ -110,8 +110,7 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 	LEFT JOIN $wpdb->usermeta umlat ON umlat.meta_key = 'pmpro_lat' AND u.ID = umlat.user_id 
 	LEFT JOIN $wpdb->usermeta umlng ON umlng.meta_key = 'pmpro_lng' AND u.ID = umlng.user_id 
 	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id 
-	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id 
-	LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id ";
 
 	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 AND umlat.meta_value IS NOT NULL ";
 
@@ -288,21 +287,47 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				$email_content .= '</p>';
 			}
 
+			// We may need to get all of the user's levels for MMPU compatibility. Declaring a variable here to hold that data.
+			$user_levels = null;
+
 			$level_content = "";
 			if( $show_level ){
+				$user_levels = pmpro_getMembershipLevelsForUser( $member['ID'] );
 				$level_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_level' ).'">';
-				$level_content .= '<strong>'.__('Level', 'pmpro-membership-maps').'</strong>&nbsp;';
-				$level_content .= $member['membership'];
+				if ( count ( $user_levels ) > 1 ) {
+					$level_content .= '<strong>'.__( 'Levels', 'pmpro-membership-maps' ).'</strong>&nbsp;';
+					$level_content .= implode( ', ', wp_list_pluck( $user_levels, 'name' ) );
+				} else {
+					$level_content .= '<strong>'.__( 'Level', 'pmpro-membership-maps' ).'</strong>&nbsp;';
+					$level_content .= $user_levels[0]->name;
+				}
 				$level_content .= '</p>';
 			}
 
 			$startdate_content = "";
 			if( $show_startdate ){
+				// Make sure that we have the user's levels.
+				if ( empty( $user_levels ) ) {
+					$user_levels = pmpro_getMembershipLevelsForUser( $member['ID'] );
+				}
+
+				// Calculate their oldest startdate.
+				$min_startdate = null;
+				foreach( $user_levels as $level ) {
+					if ( empty( $min_startdate ) || $level->startdate < $min_startdate ) {
+						$min_startdate = $level->startdate;
+					}
+				}
+
+				// Display the start date.
 				$startdate_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_date' ).'">';
 				$startdate_content .= '<strong>'.__('Start Date', 'pmpro-membership-maps').'</strong>&nbsp;';
-				$startdate_content .= date( get_option("date_format"), $member['joindate'] );
+				$startdate_content .= date_i18n( get_option( 'date_format' ), $min_startdate );
 				$startdate_content .= '</p>';
 			}
+
+			// We should get rid of the user levels now so that it doesn't affect future loop iterations.
+			unset( $user_levels );
 
 			$profile_content = "";
 			if( !empty( $link ) && !empty( $profile_url ) ) {

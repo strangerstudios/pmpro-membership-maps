@@ -16,6 +16,7 @@ function pmpromm_shortcode( $atts ){
 		'height' 		=> '400', //Uses px
 		'width'			=> '100', //Uses %
 		'zoom'			=> apply_filters( 'pmpromm_default_zoom_level', '8' ),
+		'max_zoom' 		=> NULL,
 		'map_id'			=> '1',
 		'infowindow_width' 	=> '300', //We'll always use px for this
 		'levels'		=> false,
@@ -78,6 +79,7 @@ function pmpromm_shortcode( $atts ){
 		'infowindow_width' => $infowindow_width,
 		'marker_data' => $marker_data,
 		'zoom_level' => $zoom,
+		'max_zoom' => $max_zoom,
 		'infowindow_classes' => pmpromm_get_element_class( 'pmpromm_infowindow' ),
 		'map_styles' => $map_styles		
 	) );

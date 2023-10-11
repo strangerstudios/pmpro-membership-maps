@@ -258,14 +258,14 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			}
 
 			$name_content = "";
-			$name_content .= '<h3 class="'.pmpromm_get_element_class( 'pmpromm_display-name' ).'">';
+			$name_content .= '<h2 class="'.pmpromm_get_element_class( 'pmpromm_display-name' ).'">';
 				if( !empty( $link ) && !empty( $profile_url ) ) {					
 					$user_profile = pmpromm_profile_url( $member, $profile_url );
 					$name_content .= '<a href="'.$user_profile.'">'.$member['display_name'].'</a>';
 				} else {
 					$name_content .= $member['display_name'];
 				}
-			$name_content .= '</h3>';
+			$name_content .= '</h2>';
 
 			//This will allow us to hook into the content and add custom fields from RH
 			$avatar_content = "";

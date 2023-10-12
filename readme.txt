@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 5.0
-Tested up to: 6.0
-Stable tag: 0.5
+Tested up to: 6.3
+Stable tag: 0.6
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.6 - 2023-10-12 =
+* ENHANCEMENT: Improved accessibility for screen readers. (@michaelbeil)
+* ENHANCEMENT: Added 'max_zoom' attribute to the shortcode for how far the zoom is limited on the map. Accepts a value of 0-18. (@JarrydLong)
+* ENHANCEMENT: Added support for Multiple Memberships Per User. (@dparker1005)
 
 = 0.5 - 2022-09-22 =
 * ENHANCEMENT: Test the API request whenever saving a new API Key to ensure it's all setup correctly.

@@ -40,13 +40,13 @@ jQuery(document).ready(function(){
 	//Making sure we actually have pmpromm_markers
 	if( typeof pmpromm_vars.marker_data !== 'undefined' ){
 
-		for( i = 0; i < pmpromm_vars.marker_data.length; i++ ){
+		for( pmpromm_marker_data_index = 0; pmpromm_marker_data_index < pmpromm_vars.marker_data.length; pmpromm_marker_data_index++ ){
 
-			var pmpromm_latlng = { lat: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[i]['marker_meta']['lng'] ) };
+			var pmpromm_latlng = { lat: parseFloat( pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_meta']['lng'] ) };
 
 			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_vars.infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
-				pmpromm_vars.marker_data[i]['marker_content']+
+				pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_content']+
 				'</div>'+
 			'</div>';
 
@@ -66,8 +66,8 @@ jQuery(document).ready(function(){
 			google.maps.event.addListener( pmpromm_marker,'click', (function(pmpromm_marker,content,pmpromm_infowindow){ 
 			    return function() {
 			    	//Close all other pmpromm_infowindows before we open a new one
-			    	for( i = 0; i < pmpromm_infowindows.length; i++ ){
-			    		pmpromm_infowindows[i].close();
+			    	for( pmpromm_marker_window_index = 0; pmpromm_marker_window_index < pmpromm_infowindows.length; pmpromm_marker_window_index++ ){
+			    		pmpromm_infowindows[pmpromm_marker_window_index].close();
 			    	}
 			        pmpromm_infowindow.setContent(this.content);
 			        pmpromm_infowindow.open(pmpro_map,pmpromm_marker);

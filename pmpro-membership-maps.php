@@ -28,7 +28,8 @@ function pmpromm_shortcode( $atts ){
 		'show_level' 	=> true,
 		'show_startdate' => true,
 		'avatar_align' 	=> NULL,
-		'fields' 		=> NULL
+		'fields' 		=> NULL,
+		'limit' 		=> 100,
 	), $atts));
 
 	$marker_attributes = apply_filters( 'pmpromm_marker_attributes', array(
@@ -45,7 +46,8 @@ function pmpromm_shortcode( $atts ){
 	$notice = apply_filters( 'pmpromm_default_map_notice', __( 'This map could not be loaded. Please ensure that you have entered your Google Maps API Key and that there are no JavaScript errors on the page.', 'pmpro-membership-maps' ) );
 
 	$start = apply_filters( 'pmpromm_load_markers_start', 0, $levels, $marker_attributes );
-	$limit = apply_filters( 'pmpromm_load_markers_limit', 100, $levels, $marker_attributes );
+	$limit = apply_filters( 'pmpromm_load_markers_limit', $limit, $levels, $marker_attributes );
+
 	//Get the marker data
 	$marker_data = pmpromm_load_marker_data( $levels, $marker_attributes, $start, $limit );
 
@@ -635,7 +637,8 @@ function pmpromm_load_map_directory_page( $sqlQuery, $atts ){
 		'show_startdate' => $atts['show_startdate'] ,
 		'avatar_align' => $atts['avatar_align'] ,
 		'fields' => $atts['fields'],
-		'zoom' => isset( $atts['zoom'] ) ? $atts['zoom'] : '8'
+		'zoom' => isset( $atts['zoom'] ) ? $atts['zoom'] : '8',
+		'limit' => isset( $atts['limit'] ) ? $atts['limit'] : '100',
 	);
 
 	echo pmpromm_shortcode( $attributes );

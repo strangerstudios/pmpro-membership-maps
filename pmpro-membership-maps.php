@@ -930,9 +930,9 @@ add_action( 'personal_options_update', 'pmpro_geocode_billing_address_fields_fro
 add_action( 'edit_user_profile_update', 'pmpro_geocode_billing_address_fields_frontend', 10, 1 );
 
 /**
- * Strip the [pmpro_member] shortcode from content if the current user can't edit users.
+ * Strip the [pmpro_membership_maps] shortcode from content if the current user can't edit users.
  *
- * @since 2.12.9
+ * @since 0.7
 
  * @param string|array $content The content to strip the shortcode from.
  *                              If an array is passed in, all elements
@@ -979,9 +979,9 @@ add_filter( 'widget_update_callback', 'pmpromm_maybe_strip_shortcode' );
 
 /**
  * Only allow those with the edit_users capability
- * to use the pmpro_member shortcode in post_meta.
+ * to use the pmpro_membership_maps shortcode in post_meta.
  *
- * @since 2.12.9
+ * @since 0.7
  * @param int    $meta_id     ID of the meta data entry.
  * @param int    $object_id   ID of the object the meta is attached to.
  * @param string $meta_key    Meta key.

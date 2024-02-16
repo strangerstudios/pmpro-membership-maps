@@ -1,107 +1,112 @@
-# Copyright (C) 2023 Paid Memberships Pro
+# Copyright (C) 2024 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Membership Maps Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Membership Maps Add On 0.6\n"
+"Project-Id-Version: Paid Memberships Pro - Membership Maps Add On 0.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-10-12T09:03:05+00:00\n"
+"POT-Creation-Date: 2024-02-16T13:35:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: pmpro-membership-maps\n"
 
 #. Plugin Name of the plugin
+#: pmpro-membership-maps.php
 msgid "Paid Memberships Pro - Membership Maps Add On"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: pmpro-membership-maps.php
 msgid "https://www.paidmembershipspro.com/add-ons/membership-maps/"
 msgstr ""
 
 #. Description of the plugin
+#: pmpro-membership-maps.php
 msgid "Display a map of members or for a single member's profile."
 msgstr ""
 
 #. Author of the plugin
+#: pmpro-membership-maps.php
 msgid "Paid Memberships Pro"
 msgstr ""
 
 #. Author URI of the plugin
+#: pmpro-membership-maps.php
 msgid "https://www.paidmembershipspro.com"
 msgstr ""
 
-#: pmpro-membership-maps.php:45
+#: pmpro-membership-maps.php:46
 msgid "This map could not be loaded. Please ensure that you have entered your Google Maps API Key and that there are no JavaScript errors on the page."
 msgstr ""
 
-#: pmpro-membership-maps.php:287
+#: pmpro-membership-maps.php:289
 msgid "Email Address"
 msgstr ""
 
-#: pmpro-membership-maps.php:300
+#: pmpro-membership-maps.php:302
 msgid "Levels"
 msgstr ""
 
-#: pmpro-membership-maps.php:303
+#: pmpro-membership-maps.php:305
 msgid "Level"
 msgstr ""
 
-#: pmpro-membership-maps.php:326
+#: pmpro-membership-maps.php:328
 msgid "Start Date"
 msgstr ""
 
-#: pmpro-membership-maps.php:337
+#: pmpro-membership-maps.php:339
 msgid "View Profile"
 msgstr ""
 
-#: pmpro-membership-maps.php:491
+#: pmpro-membership-maps.php:493
 msgid "Google Maps API Key"
 msgstr ""
 
-#: pmpro-membership-maps.php:492
+#: pmpro-membership-maps.php:494
 msgid "Used by the Membership Maps Add On."
 msgstr ""
 
-#: pmpro-membership-maps.php:497
+#: pmpro-membership-maps.php:499
 msgid "Used by the Membership Maps Add On. %s %s"
 msgstr ""
 
-#: pmpro-membership-maps.php:497
+#: pmpro-membership-maps.php:499
 msgid "Obtain Your Google Maps API Key"
 msgstr ""
 
-#: pmpro-membership-maps.php:497
+#: pmpro-membership-maps.php:499
 msgid "API Key Status"
 msgstr ""
 
-#: pmpro-membership-maps.php:595
+#: pmpro-membership-maps.php:597
 msgid "View Documentation"
 msgstr ""
 
-#: pmpro-membership-maps.php:595
+#: pmpro-membership-maps.php:597
 msgid "Docs"
 msgstr ""
 
-#: pmpro-membership-maps.php:596
+#: pmpro-membership-maps.php:598
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: pmpro-membership-maps.php:596
+#: pmpro-membership-maps.php:598
 msgid "Support"
 msgstr ""
 
-#: pmpro-membership-maps.php:610
+#: pmpro-membership-maps.php:612
 msgid "View Settings"
 msgstr ""
 
-#: pmpro-membership-maps.php:610
+#: pmpro-membership-maps.php:612
 msgid "API Settings"
 msgstr ""
 
-#: pmpro-membership-maps.php:825
+#: pmpro-membership-maps.php:828
 msgid "Paid Memberships Pro - Membership Maps: An Error Occurred - %s"
 msgstr ""

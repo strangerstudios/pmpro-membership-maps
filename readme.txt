@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 5.2
 Tested up to: 6.4
-Stable tag: 0.7
+Stable tag: 0.7.1
 
 Display a map of members or for a single member's profile.
 
@@ -43,7 +43,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
-= 0.7 -2024-02-16 =
+= 0.7.1 - 2024-02-26 =
+* BUG FIX: Fixed a bug introduced in 0.7 where the map would not display markers due to undefined variable.
+
+= 0.7 - 2024-02-16 =
 * SECURITY: Only users with the "edit_users" capability may add the pmpro_membership_maps shortcode to posts and widgets now.
 * ENHANCEMENT: Added better support for the Membership Directory Limit attribute to apply to the map displayed on the Directory page.
 * REFACTOR: Refactored marker data indexes to prevent conflicts.

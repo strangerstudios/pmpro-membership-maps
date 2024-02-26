@@ -44,7 +44,7 @@ jQuery(document).ready(function(){
 
 			var pmpromm_latlng = { lat: parseFloat( pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_meta']['lat'] ), lng: parseFloat( pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_meta']['lng'] ) };
 
-			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+i+'" class="'+pmpromm_vars.infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
+			var pmpromm_contentString = '<div id="pmpro_pmpromm_infowindow_'+pmpromm_marker_data_index+'" class="'+pmpromm_vars.infowindow_classes+'" style="width: 100%; max-width: '+pmpromm_vars.infowindow_width+'px;">'+
 				'<div class="bodyContent">'+
 				pmpromm_vars.marker_data[pmpromm_marker_data_index]['marker_content']+
 				'</div>'+

@@ -415,6 +415,8 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$member_array['marker_content'] = implode( " ", $marker_content_order );
 
+			$member_array['marker_content'] = apply_filters( 'pmpromm_single_marker_content', $member_array['marker_content'], $member );
+
 			$marker_array[] = $member_array;
 		}
 	}

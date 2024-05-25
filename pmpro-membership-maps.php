@@ -458,6 +458,8 @@ add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
 
 function pmpromm_update_billing_info( $morder ){
 
+    _deprecated_function( __FUNCTION__, 'TBD' );
+
 	global $current_user;
 
 	if( !empty( $_REQUEST['baddress1'] ) ){
@@ -482,7 +484,7 @@ function pmpromm_update_billing_info( $morder ){
 	}
 
 }
-add_action( 'pmpro_billing_after_preheader', 'pmpromm_update_billing_info', 10, 1 );
+// add_action( 'pmpro_billing_after_preheader', 'pmpromm_update_billing_info', 10, 1 );
 
 //Adds API Key field to advanced settings page
 function pmpromm_advanced_settings_field( $fields ) {

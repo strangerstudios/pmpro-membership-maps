@@ -1007,7 +1007,7 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
  * @param string $layout  Layout type - choice of div or table
  * @return string HTML output
  */
-function pmpromm_address_fields( $user_id = false, $layout = 'div' ) {
+function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 
     //No user ID provided, lets get the current user
     if( ! $user_id ) {
@@ -1155,7 +1155,7 @@ function pmpromm_address_fields( $user_id = false, $layout = 'div' ) {
  * @return string HTML output
  */
 function pmpromm_checkout_fields(){
-    pmpromm_address_fields();
+    pmpromm_show_pin_location_fields();
 }
 add_action( 'pmpro_checkout_boxes', 'pmpromm_checkout_fields' );
 
@@ -1166,6 +1166,6 @@ add_action( 'pmpro_checkout_boxes', 'pmpromm_checkout_fields' );
  * @return string HTML output
  */
 function pmpromm_edit_profile_fields( $current_user ){
-    pmpromm_address_fields( $current_user->ID );
+    pmpromm_show_pin_location_fields( $current_user->ID );
 }
 add_action( 'pmpro_show_user_profile', 'pmpromm_edit_profile_fields', 10, 1 );

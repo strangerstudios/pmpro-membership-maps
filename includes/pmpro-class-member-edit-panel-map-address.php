@@ -24,7 +24,7 @@ class PMPro_Member_Edit_Panel_Map_Address extends PMPro_Member_Edit_Panel {
 
 		?>
 		<div id="pmpromm-map-address">
-			<?php pmpromm_address_fields( $user->ID, 'table' ); ?>
+			<?php pmpromm_show_pin_location_fields( $user->ID, 'table' ); ?>
             <div>
                 <button type="submit" name="pmpro-member-edit-memberships-panel-member_address" class="button button-primary" value=""><?php _e( 'Save Map Address', 'paid-memberships-pro' ); ?></button>
             </div>

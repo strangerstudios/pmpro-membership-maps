@@ -108,18 +108,17 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 
 	$sql_parts = array();
 
-	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as lat, umlng.meta_value as lng FROM $wpdb->users u ";
+	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, umf.meta_value as first_name, uml.meta_value as last_name, ummap.meta_value as maplocation FROM $wpdb->users u ";
 
 	$sql_parts['JOIN'] = "
 	LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id 
 	LEFT JOIN $wpdb->usermeta umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id 
 	LEFT JOIN $wpdb->usermeta uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id 
-	LEFT JOIN $wpdb->usermeta umlat ON umlat.meta_key = 'pmpro_lat' AND u.ID = umlat.user_id 
-	LEFT JOIN $wpdb->usermeta umlng ON umlng.meta_key = 'pmpro_lng' AND u.ID = umlng.user_id 
+	LEFT JOIN $wpdb->usermeta ummap ON ummap.meta_key = 'pmpromm_pin_location' AND u.ID = ummap.user_id 
 	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id 
 	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id ";
 
-	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 AND umlat.meta_value IS NOT NULL ";
+	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 AND ummap.meta_value IS NOT NULL ";
 
 	$sql_parts['GROUP'] = "GROUP BY u.ID ";
 
@@ -248,13 +247,16 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 		foreach( $members as $member ){
 			$member_array = array();
 
-			if( empty( $member['lat'] ) || empty( $member['lng'] ) ){
-				continue;
-			}
+			$member_address = isset( $member['maplocation'] ) ? maybe_unserialize( $member['maplocation'] ) : '';
+
+            if( empty( $member_address['latitude'] ) ) {
+                continue;
+            }
 
 			$member_array['ID'] = $member['ID'];
-			$member_array['marker_meta']['lat'] = $member['lat'];
-			$member_array['marker_meta']['lng'] = $member['lng'];
+
+			$member_array['marker_meta']['lat'] = $member_address['latitude'];
+			$member_array['marker_meta']['lng'] = $member_address['longitude'];
 
 			$member['meta'] = get_user_meta( $member['ID'] );
 

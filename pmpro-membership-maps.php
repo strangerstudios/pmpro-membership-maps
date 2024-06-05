@@ -256,6 +256,12 @@ function pmpromm_build_markers( $members, $marker_attributes ){
                 $member_array['marker_meta']['lat'] = $member_address['old_lat'];
 			    $member_array['marker_meta']['lng'] = $member_address['old_lng'];
             } else {
+
+                if( ! empty( $member_address['optin'] ) && ! $member_address['optin'] ){
+                    //If the user has not opted in, we should not display their location
+                    continue;
+                }
+
                 $member_array['marker_meta']['lat'] = $member_address['latitude'];
 			    $member_array['marker_meta']['lng'] = $member_address['longitude'];
             }

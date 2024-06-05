@@ -108,12 +108,14 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 
 	$sql_parts = array();
 
-	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, umf.meta_value as first_name, uml.meta_value as last_name, ummap.meta_value as maplocation FROM $wpdb->users u ";
+	$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_nicename, u.display_name, u.user_url, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, umf.meta_value as first_name, uml.meta_value as last_name, umlat.meta_value as old_lat, umlng.meta_value as old_lng, ummap.meta_value as maplocation FROM $wpdb->users u ";
 
 	$sql_parts['JOIN'] = "
 	LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id 
 	LEFT JOIN $wpdb->usermeta umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id 
 	LEFT JOIN $wpdb->usermeta uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id 
+    LEFT JOIN $wpdb->usermeta umlat ON umlat.meta_key = 'pmpro_lat' AND u.ID = umlat.user_id 
+	LEFT JOIN $wpdb->usermeta umlng ON umlng.meta_key = 'pmpro_lng' AND u.ID = umlng.user_id 
 	LEFT JOIN $wpdb->usermeta ummap ON ummap.meta_key = 'pmpromm_pin_location' AND u.ID = ummap.user_id 
 	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id 
 	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id ";
@@ -249,14 +251,16 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$member_address = isset( $member['maplocation'] ) ? maybe_unserialize( $member['maplocation'] ) : '';
 
-            if( empty( $member_address['latitude'] ) ) {
-                continue;
+            if( empty( $member_address['latitude'] ) && $member_address['old_lat'] !== NULL && $member_address['old_lng'] !== NULL ) {
+                //If we don't have a new address, check for a valid old address
+                $member_array['marker_meta']['lat'] = $member_address['old_lat'];
+			    $member_array['marker_meta']['lng'] = $member_address['old_lng'];
+            } else {
+                $member_array['marker_meta']['lat'] = $member_address['latitude'];
+			    $member_array['marker_meta']['lng'] = $member_address['longitude'];
             }
 
 			$member_array['ID'] = $member['ID'];
-
-			$member_array['marker_meta']['lat'] = $member_address['latitude'];
-			$member_array['marker_meta']['lng'] = $member_address['longitude'];
 
 			$member['meta'] = get_user_meta( $member['ID'] );
 
@@ -961,11 +965,6 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
 
     }
 
-    if( ! isset( $_REQUEST['pmpromm_optin'] ) ) {
-        delete_user_meta( $user_id, 'pmpromm_pin_location' );
-        $save = false;
-    }
-
     if( ! empty( $_REQUEST['pmpromm_street_name'] ) && $save ) {
         
         //geocode address
@@ -976,6 +975,12 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
             'zip'       => ( ! empty( $_REQUEST['pmpromm_zip'] ) ) ? sanitize_text_field( $_REQUEST['pmpromm_zip'] ) : '',
             'country'   => ( ! empty( $_REQUEST['pmpromm_country'] ) ) ? sanitize_text_field( $_REQUEST['pmpromm_country'] ) : ''
         );
+
+        if( ! isset( $_REQUEST['pmpromm_optin'] ) ) {
+            $member_address['optin'] = false;
+        } else {
+            $member_address['optin'] = true;
+        }
         
         $coordinates = pmpromm_geocode_address( $member_address );
         
@@ -1020,7 +1025,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
         }
 
     }
-    
+
     $pin_location = get_user_meta( $user_id, 'pmpromm_pin_location', true );
 
     $pmpromm_street = isset( $pin_location['street'] ) ? $pin_location['street'] : '';
@@ -1028,11 +1033,25 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
     $pmpromm_state = isset( $pin_location['state'] ) ? $pin_location['state'] : '';
     $pmpromm_zip = isset( $pin_location['zip'] ) ? $pin_location['zip'] : '';
     $pmpromm_country = isset( $pin_location['country'] ) ? $pin_location['country'] : '';
+    $pmpromm_optin = isset( $pin_location['optin'] ) ? $pin_location['optin'] : false;
 
-    $pmpromm_optin = false;
+    /**
+     * Adds support for the old billing fields
+     */
+    if( empty( $pin_location ) ) {
+        //We haven't got saved an address, lets check if there's a valid old address available
+        $pmpromm_old_lat = get_user_meta( $user_id, 'pmpro_lat', true );
+        $pmpromm_old_lng = get_user_meta( $user_id, 'pmpro_lng', true );
 
-    if( ! empty( $pmpromm_street ) && ! empty( $pmpromm_city ) && ! empty( $pmpromm_state ) && ! empty( $pmpromm_zip ) && ! empty( $pmpromm_country ) ) {
-        $pmpromm_optin = true;
+        if( ! empty( $pmpromm_old_lat ) && ! empty( $pmpromm_old_lng ) ){
+            $pmpromm_street = get_user_meta( $user_id, 'pmpro_baddress1', true ).' '.get_user_meta( $user_id, 'pmpro_baddress2', true );
+            $pmpromm_city = get_user_meta( $user_id, 'pmpro_bcity', true );
+            $pmpromm_state = get_user_meta( $user_id, 'pmpro_bstate', true );
+            $pmpromm_zip = get_user_meta( $user_id, 'pmpro_bzipcode', true );
+            $pmpromm_country = get_user_meta( $user_id, 'pmpro_bcountry', true );
+            $pmpromm_optin = true;
+        }
+        
     }
 
     if( $layout == 'div' ) {

@@ -26,7 +26,7 @@ class PMPro_Member_Edit_Panel_Map_Address extends PMPro_Member_Edit_Panel {
 		<div id="pmpromm-map-address">
 			<?php pmpromm_show_pin_location_fields( $user->ID, 'table' ); ?>
             <div>
-                <button type="submit" name="pmpro-member-edit-memberships-panel-member_address" class="button button-primary" value=""><?php _e( 'Save Map Address', 'paid-memberships-pro' ); ?></button>
+                <button type="submit" name="pmpro-member-edit-memberships-panel-member_address" class="button button-primary" value=""><?php esc_html_e( 'Save Map Address', 'paid-memberships-pro' ); ?></button>
             </div>
 		</div> <!-- end #member-history-orders -->
 		<?php
@@ -50,18 +50,6 @@ class PMPro_Member_Edit_Panel_Map_Address extends PMPro_Member_Edit_Panel {
         }
         
     }
-
-	/**
-	 * Check if the current user can view this panel.
-	 * Can be overridden by child classes.
-	 *
-	 * @since TBD
-	 *
-	 * @return bool
-	 */
-	public function should_show() {
-		return current_user_can( 'manage_options' );
-	}
 }
 
 /**

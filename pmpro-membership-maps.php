@@ -97,6 +97,12 @@ function pmpromm_shortcode( $atts ){
 }
 add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );
 
+/** Enqueue frontend scripts */
+function pmpromm_enqueue_scripts() {
+	wp_enqueue_script( 'pmpro-membership-maps-frontend', plugins_url( 'js/frontend.js', __FILE__ ) );
+}
+add_action( 'wp_enqueue_scripts', 'pmpromm_enqueue_scripts' );
+
 function pmpromm_load_marker_data( $levels = false, $marker_attributes = array(), $start = 0, $limit = 100, $s = "", $pn = false, $order_by = false, $order = false, $end = false ){
 	/**
 	 * We're adding in support for $pn, $order_by, $order and $end to allow the pmpro_membership_maps_sql_parts
@@ -251,36 +257,34 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 			$member_address = isset( $member['maplocation'] ) ? maybe_unserialize( $member['maplocation'] ) : '';
 
-            if( empty( $member_address['latitude'] ) && $member_address['old_lat'] !== NULL && $member_address['old_lng'] !== NULL ) {
+			//If the user has not opted in, we should not display their location on the map.
+			if ( ! $member_address['optin'] ) {
+				continue;
+			}
+
+            if ( empty( $member_address['latitude'] ) && $member_address['old_lat'] !== NULL && $member_address['old_lng'] !== NULL ) {
                 //If we don't have a new address, check for a valid old address
                 $member_array['marker_meta']['lat'] = $member_address['old_lat'];
 			    $member_array['marker_meta']['lng'] = $member_address['old_lng'];
             } else {
-
-                if( ! empty( $member_address['optin'] ) && ! $member_address['optin'] ){
-                    //If the user has not opted in, we should not display their location
-                    continue;
-                }
-
                 $member_array['marker_meta']['lat'] = $member_address['latitude'];
 			    $member_array['marker_meta']['lng'] = $member_address['longitude'];
             }
 
 			$member_array['ID'] = $member['ID'];
-
 			$member['meta'] = get_user_meta( $member['ID'] );
 
-			if( !empty( $pmpro_pages['profile'] ) ) {
+			if ( ! empty( $pmpro_pages['profile'] ) ) {
 				$profile_url = apply_filters( 'pmpromm_profile_url', get_permalink( $pmpro_pages['profile'] ) );
 			}
 
 			$name_content = "";
-			$name_content .= '<h2 class="'.pmpromm_get_element_class( 'pmpromm_display-name' ).'">';
+			$name_content .= '<h2 class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_display-name' ) ) . '">';
 				if( !empty( $link ) && !empty( $profile_url ) ) {					
 					$user_profile = pmpromm_profile_url( $member, $profile_url );
-					$name_content .= '<a href="'.$user_profile.'">'.$member['display_name'].'</a>';
+					$name_content .= '<a href="' . esc_url( $user_profile ) . '">' . esc_html( $member['display_name'] ) . '</a>';
 				} else {
-					$name_content .= $member['display_name'];
+					$name_content .= esc_html( $member['display_name'] );
 				}
 			$name_content .= '</h2>';
 
@@ -288,21 +292,21 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$avatar_content = "";
 			if( $show_avatar ){
 				$avatar_align = ( !empty( $marker_attributes['avatar_align'] ) ) ? $marker_attributes['avatar_align'] : "";
-				$avatar_content .= '<div class="'.pmpromm_get_element_class( 'pmpromm_avatar' ).'">';
-					if( !empty( $marker_attributes['link'] ) && !empty( $profile_url ) ) {
+				$avatar_content .= '<div class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_avatar' ) ) . '">';
+					if ( ! empty( $marker_attributes['link'] ) && ! empty( $profile_url ) ) {
 						$user_profile = pmpromm_profile_url( $member, $profile_url );
-						$avatar_content .= '<a class="'.pmpromm_get_element_class( $avatar_align ).'" href="'.$user_profile.'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</a>';
+						$avatar_content .= '<a class="' . esc_attr( pmpromm_get_element_class( $avatar_align ) ) . '" href="' . esc_url( $user_profile ) . '">' . get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ) . '</a>';
 					} else {
-						$avatar_content .= '<span class="'.pmpromm_get_element_class( $avatar_align ).'">'.get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ).'</span>';
+						$avatar_content .= '<span class="' . esc_attr( pmpromm_get_element_class( $avatar_align ) ) . '">' . get_avatar( $member['ID'], $marker_attributes['avatar_size'], NULL, $member['display_name'] ) . '</span>';
 					}
 				$avatar_content .= '</div>';
 			}
 
 			$email_content = "";
-			if( $show_email ){
-				$email_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_email' ).'">';
-					$email_content .= '<strong>'.__( 'Email Address', 'pmpro-membership-maps' ).'</strong>&nbsp;';
-					$email_content .= $member['user_email'];
+			if ( $show_email ) {
+				$email_content .= '<p class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_email' ) ) . '">';
+					$email_content .= '<strong>' . esc_html__( 'Email Address', 'pmpro-membership-maps' ) . '</strong>&nbsp;';
+					$email_content .= esc_html( $member['user_email'] );
 				$email_content .= '</p>';
 			}
 
@@ -310,21 +314,21 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			$user_levels = null;
 
 			$level_content = "";
-			if( $show_level ){
+			if ( $show_level ) {
 				$user_levels = pmpro_getMembershipLevelsForUser( $member['ID'] );
-				$level_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_level' ).'">';
+				$level_content .= '<p class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_level' ) ) . '">';
 				if ( count ( $user_levels ) > 1 ) {
-					$level_content .= '<strong>'.__( 'Levels', 'pmpro-membership-maps' ).'</strong>&nbsp;';
+					$level_content .= '<strong>' . esc_html__( 'Levels', 'pmpro-membership-maps' ) . '</strong>&nbsp;';
 					$level_content .= implode( ', ', wp_list_pluck( $user_levels, 'name' ) );
 				} else {
-					$level_content .= '<strong>'.__( 'Level', 'pmpro-membership-maps' ).'</strong>&nbsp;';
-					$level_content .= $user_levels[0]->name;
+					$level_content .= '<strong>' . esc_html__( 'Level', 'pmpro-membership-maps' ) . '</strong>&nbsp;';
+					$level_content .= esc_html( $user_levels[0]->name );
 				}
 				$level_content .= '</p>';
 			}
 
 			$startdate_content = "";
-			if( $show_startdate ){
+			if ( $show_startdate ) {
 				// Make sure that we have the user's levels.
 				if ( empty( $user_levels ) ) {
 					$user_levels = pmpro_getMembershipLevelsForUser( $member['ID'] );
@@ -339,8 +343,8 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 				}
 
 				// Display the start date.
-				$startdate_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_date' ).'">';
-				$startdate_content .= '<strong>'.__('Start Date', 'pmpro-membership-maps').'</strong>&nbsp;';
+				$startdate_content .= '<p class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_date' ) ) . '">';
+				$startdate_content .= '<strong>' . esc_html__( 'Start Date', 'pmpro-membership-maps' ) . '</strong>&nbsp;';
 				$startdate_content .= date_i18n( get_option( 'date_format' ), $min_startdate );
 				$startdate_content .= '</p>';
 			}
@@ -349,9 +353,9 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			unset( $user_levels );
 
 			$profile_content = "";
-			if( !empty( $link ) && !empty( $profile_url ) ) {
+			if ( ! empty( $link ) && ! empty( $profile_url ) ) {
 				$user_profile = pmpromm_profile_url( $member, $profile_url );
-				$profile_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_profile' ).'"><a href="'.$user_profile.'">'.apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ).'</a></p>';				
+				$profile_content .= '<p class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_profile' ) ) . '"><a href="' . esc_url( $user_profile ) . '">' . esc_html( apply_filters( 'pmpromm_view_profile_text', __( 'View Profile', 'pmpro-membership-maps' ) ) ) . '</a></p>';				
 			}
 
 			$rhfield_content = "";
@@ -377,10 +381,10 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 							$current_field_val = $member[$field[1]];
 						}
 
-						$rhfield_content .= '<p class="'.pmpromm_get_element_class( 'pmpromm_'.$current_field_key ).'">';
+						$rhfield_content .= '<p class="' . esc_attr( pmpromm_get_element_class( 'pmpromm_'.$current_field_key ) ) . '">';
 						if( is_array( $field ) && !empty( $field['filename'] ) ){
 							//this is a file field
-							$rhfield_content .= '<strong>'.$current_field_key.'</strong>';
+							$rhfield_content .= '<strong>' . esc_html( $current_field_key ) . '</strong>';
 							$rhfield_content .= pmpromm_display_file_field($member['meta'][$field[1]]);
 						} elseif ( is_array( $field ) ){
 							$cf_field = array();
@@ -473,7 +477,10 @@ function pmpromm_update_billing_info( $morder ){
 }
 add_action( 'pmpro_billing_after_preheader', 'pmpromm_update_billing_info', 10, 1 );
 
-//Adds API Key field to advanced settings page
+/**
+ * Adds API Key field to advanced settings page
+ * Note: The filter escapes during it's output and not needed within this function.
+ */
 function pmpromm_advanced_settings_field( $fields ) {
 
 	$fields['pmpromm_api_key'] = array(
@@ -640,7 +647,7 @@ add_action( 'pmpro_member_directory_before', 'pmpromm_load_map_directory_page', 
  */
 function pmpromm_add_zoom_level_directory_page( $atts ){
 
-	$atts['zoom'] = apply_filters( 'pmpromm_default_zoom_level', '8' ); //Must be a string to prevent any PHP errors
+	$atts['zoom'] = sanitize_text_field( apply_filters( 'pmpromm_default_zoom_level', '8' ) ); //Must be a string to prevent any PHP errors
 
 	return $atts;
 
@@ -1062,49 +1069,53 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 
     if( $layout == 'div' ) {
         ?>
-        <div id="pmpro_checkout_box-more-information" class="pmpro_checkout">
-            <hr>
-            <h2>
-                <span class="pmpro_checkout-h2-name"><?php _e( 'Membership Map Address', 'paid-memberships-pro' ); ?></span>
-            </h2>
-            <div class="pmpromm_pin_location_field pmpro_checkout-fields">
-            <div class='pmpro_checkout-field'>
-                    <label for="pmpromm_optin"><?php _e( 'Show on Membership Map', 'pmpro-membership-maps' ); ?></label>
-                    <input type="checkbox" id="pmpromm_optin" name="pmpromm_optin" value="1" <?php checked( 1, $pmpromm_optin ); ?> />
-                    <p class="description"><?php _e( 'Check this box to include your address on the Membership Map. Unchecking this will empty the address fields.', 'pmpro-membership-maps' ); ?></p>
-                </div>
-                <div class='pmpro_checkout-field'>
-                    <label for="pmpromm_street_name"><?php _e( 'Street Name', 'pmpro-membership-maps' ); ?></label>
-                    <input type="text" id="pmpromm_street_name" name="pmpromm_street_name" value="<?php echo esc_attr( $pmpromm_street ); ?>" />
-                </div>
-                <div class="pmpromm_pin_location_field pmpro_checkout-field">
-                    <label for="pmpromm_city"><?php _e( 'City', 'pmpro-membership-maps' ); ?></label>
-                    <input type="text" id="pmpromm_city" name="pmpromm_city" value="<?php echo esc_attr( $pmpromm_city ); ?>" />
-                </div>
-                <div class="pmpromm_pin_location_field pmpro_checkout-field">
-                    <label for="pmpromm_state"><?php _e( 'State', 'pmpro-membership-maps' ); ?></label>
-                    <input type="text" id="pmpromm_state" name="pmpromm_state" value="<?php echo esc_attr( $pmpromm_state ); ?>" />
-                </div>
-                <div class="pmpromm_pin_location_field pmpro_checkout-field">
-                    <label for="pmpromm_zip"><?php _e( 'Zip Code', 'pmpro-membership-maps' ); ?></label>
-                    <input type="text" id="pmpromm_zip" name="pmpromm_zip" value="<?php echo esc_attr( $pmpromm_zip ); ?>" />
-                </div>
-                <div class="pmpromm_pin_location_field pmpro_checkout-field">
-                    <label for="pmpromm_country"><?php _e( 'Country', 'pmpro-membership-maps' ); ?></label>
-                    
-                    <select name="pmpromm_country" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( '', 'bcountry' ) ); ?>">
-                    <?php
-                        global $pmpro_countries, $pmpro_default_country;
-                        if(!$bcountry) {
-                            $bcountry = $pmpro_default_country;
-                        }
-                        foreach($pmpro_countries as $abbr => $country) { ?>
-                            <option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $pmpromm_country) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country )?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-        </div>
+		<fieldset id="pmpro_membership_maps_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Membership Map Address', 'paid-memberships-pro' ); ?></h2>
+					</legend>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox' ) ); ?>">
+						<label for="pmpromm_optin" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
+						<input type="checkbox" id="pmpromm_optin" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox' ) ); ?>" name="pmpromm_optin" value="1" <?php checked( 1, $pmpromm_optin ); ?> />
+						<?php esc_html_e( 'Show on Membership Map', 'pmpro-membership-maps' ); ?>
+						</label>
+					</div>
+					<br>
+					<div id="pmpromm_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields pmpro_cols-2' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-pmpromm_street_name' ) ); ?>">
+							<label for="pmpromm_street_name"><?php esc_html_e( 'Street Name', 'pmpro-membership-maps' ); ?></label>
+							<input type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" id="pmpromm_street_name" name="pmpromm_street_name" value="<?php echo esc_attr( $pmpromm_street ); ?>" />
+						</div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-pmpromm_city' ) ); ?>">
+							<label for="pmpromm_city"><?php esc_html_e( 'City', 'pmpro-membership-maps' ); ?></label>
+							<input type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" id="pmpromm_city" name="pmpromm_city" value="<?php echo esc_attr( $pmpromm_city ); ?>" />
+						</div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-pmpromm_state' ) ); ?>">
+							<label for="pmpromm_state"><?php esc_html_e( 'State', 'pmpro-membership-maps' ); ?></label>
+							<input type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" id="pmpromm_state" name="pmpromm_state" value="<?php echo esc_attr( $pmpromm_state ); ?>" />
+						</div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-pmpromm_zip' ) ); ?>">
+							<label for="pmpromm_zip"><?php esc_html_e( 'Zip Code', 'pmpro-membership-maps' ); ?></label>
+							<input type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" id="pmpromm_zip" name="pmpromm_zip" value="<?php echo esc_attr( $pmpromm_zip ); ?>" />
+						</div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_form_field-pmpromm_country' ) ); ?>">
+							<label for="pmpromm_country"><?php esc_html_e( 'Country', 'pmpro-membership-maps' ); ?></label>
+							<select name="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select' ) ); ?>" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpromm_country' ) ); ?>">
+							<?php
+								global $pmpro_countries, $pmpro_default_country;
+								if(!$bcountry) {
+									$bcountry = $pmpro_default_country;
+								}
+								foreach($pmpro_countries as $abbr => $country) { ?>
+									<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $pmpromm_country) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country )?></option>
+								<?php } ?>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</fieldset>
     <?php
     } else {
         //Table layout
@@ -1112,16 +1123,16 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
         <table class="form-table">                
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_optin"><?php _e( 'Show on Membership Map', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_optin"><?php esc_html_e( 'Show on Membership Map', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <input type="checkbox" id="pmpromm_optin" name="pmpromm_optin" value="1" <?php checked( 1, $pmpromm_optin ); ?> />
-                    <p class="description"><?php _e( 'Check this box to include your address on the Membership Map. Unchecking this will empty the address fields.', 'pmpro-membership-maps' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Check this box to include your address on the Membership Map. Unchecking this will empty the address fields.', 'pmpro-membership-maps' ); ?></p>
                 </td>
             </tr>
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_street_name"><?php _e( 'Street Name', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_street_name"><?php esc_html_e( 'Street Name', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <input type="text" id="pmpromm_street_name" name="pmpromm_street_name" value="<?php echo esc_attr( $pmpromm_street ); ?>" />
@@ -1129,7 +1140,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
             </tr>
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_city"><?php _e( 'City', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_city"><?php esc_html_e( 'City', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <input type="text" id="pmpromm_city" name="pmpromm_city" value="<?php echo esc_attr( $pmpromm_city ); ?>" />
@@ -1137,7 +1148,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
             </tr>
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_state"><?php _e( 'State', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_state"><?php esc_html_e( 'State', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <input type="text" id="pmpromm_state" name="pmpromm_state" value="<?php echo esc_attr( $pmpromm_state ); ?>" />
@@ -1145,7 +1156,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
             </tr>
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_zip"><?php _e( 'Zip Code', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_zip"><?php esc_html_e( 'Zip Code', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <input type="text" id="pmpromm_zip" name="pmpromm_zip" value="<?php echo esc_attr( $pmpromm_zip ); ?>" />
@@ -1153,7 +1164,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
             </tr>
             <tr class='form-field'>
                 <th>
-                    <label for="pmpromm_country"><?php _e( 'Country', 'pmpro-membership-maps' ); ?></label>
+                    <label for="pmpromm_country"><?php esc_html_e( 'Country', 'pmpro-membership-maps' ); ?></label>
                 </th>
                 <td>
                     <select name="pmpromm_country" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( '', 'bcountry' ) ); ?>">

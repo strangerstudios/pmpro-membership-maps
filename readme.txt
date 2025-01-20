@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 5.2
-Tested up to: 6.4
-Stable tag: 0.7.1
+Tested up to: 6.7
+Stable tag: 0.8
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,14 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.8 - 2025-01-20 =
+* SECURITY: General improvements to sanitization and escaping of variables. (@andrewlimaza)
+* ENHANCEMENT: Added improved opt-in functionality for allowing members to opt-in to being displayed on the map for privacy reasons. Backwards compatibility is added for existing members to be opted-in and may opt-out at any time. (@JarrydLong)
+* ENHANCEMENT: New "Membership Map Address" fields used to capture the member's address for the map. (@JarrydLong)
+* ENHANCEMENT: New filter `pmpromm_single_map_profile_shortcode` which allows developers to adjust the map shortcode and it's attributes for the single profile page view. (@andrewlimaza)
+* BUG FIX: Fixed an issue where viewing your own profile would display other member's markers on the map (when no username is passed to the profile URL). (@MaximilianoRicoTabo)
+* BUG FIX: Added filter `pmpromm_single_marker_content` back to the codebase. It was mistakenly removed in a prior release. (@andrewlimaza)
+
 = 0.7.1 - 2024-02-26 =
 * BUG FIX: Fixed a bug introduced in 0.7 where the map would not display markers due to undefined variable.
 

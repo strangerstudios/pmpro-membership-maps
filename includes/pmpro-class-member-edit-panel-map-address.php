@@ -3,7 +3,7 @@
 /**
  * Extends the Member Edit Panel class to add a new panel for the member address
  *
- * @since TBD
+ * @since 0.8
  */
 class PMPro_Member_Edit_Panel_Map_Address extends PMPro_Member_Edit_Panel {
 	/**
@@ -55,7 +55,7 @@ class PMPro_Member_Edit_Panel_Map_Address extends PMPro_Member_Edit_Panel {
 /**
  * Adds a panel to the Edit Member Dashboard
  *
- * @since TBD
+ * @since 0.8
  */
 function pmpromm_edit_panel_map_address( $panels ){
     $panels[] = new PMPro_Member_Edit_Panel_Map_Address();

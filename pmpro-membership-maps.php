@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Membership Maps Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/membership-maps/
  * Description: Display a map of members or for a single member's profile.
- * Version: 0.7.1
+ * Version: 0.8
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-membership-maps
@@ -126,12 +126,17 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 	LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id 
 	LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id ";
 
-	$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND (umh.meta_value IS NULL OR umh.meta_value <> '1') AND mu.membership_id > 0 AND ummap.meta_value IS NOT NULL ";
+	// Supports backwards compatibiliy for older members and their coordinates.
+	$sql_parts['WHERE'] = "WHERE mu.status = 'active' 
+	AND (umh.meta_value IS NULL OR umh.meta_value <> '1') 
+	AND mu.membership_id > 0 
+	AND (
+		(umlat.meta_value IS NOT NULL AND umlat.meta_value <> '') 
+		OR (umlng.meta_value IS NOT NULL AND umlng.meta_value <> '') 
+		OR (ummap.meta_value IS NOT NULL AND ummap.meta_value <> '')
+	) ";
 
 	$sql_parts['GROUP'] = "GROUP BY u.ID ";
-
-	//Wouldn't need this for the map
-	// $sql_parts['ORDER'] = "ORDER BY ". esc_sql($order_by) . " " . $order . " ";
 
 	$sql_parts['LIMIT'] = "LIMIT $start, $limit";
 
@@ -147,10 +152,7 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 	// Allow filters for SQL parts.
 	$sql_parts = apply_filters( 'pmpro_membership_maps_sql_parts', $sql_parts, $levels, $s, $pn, $limit, $start, $end );
 
-	$sqlQuery = $sql_parts['SELECT'] . $sql_parts['JOIN'] . $sql_parts['WHERE'] . $sql_parts['GROUP'] . 
-	// $sql_parts['ORDER'] . 
-	$sql_parts['LIMIT'];
-
+	$sqlQuery = $sql_parts['SELECT'] . $sql_parts['JOIN'] . $sql_parts['WHERE'] . $sql_parts['GROUP'] . $sql_parts['LIMIT'];
 
 	$sqlQuery = apply_filters("pmpro_membership_maps_sql", $sqlQuery, $levels, $s, $pn, $limit, $start, $end, $order_by, $order );
 
@@ -251,11 +253,22 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 
 	$marker_array = array();
 
-	if( !empty( $members ) ){
+	if ( ! empty( $members ) ) {
 		foreach( $members as $member ){
 			$member_array = array();
 
-			$member_address = isset( $member['maplocation'] ) ? maybe_unserialize( $member['maplocation'] ) : '';
+			$member_address = isset( $member['maplocation'] ) ? maybe_unserialize( $member['maplocation'] ) : array();
+
+			// If it's an empty array, but the member has old lat/lng, we should use that.
+			if ( empty( $member_address ) && ! empty( $member['old_lat'] ) ) {
+				$member_address['old_lat'] = $member['old_lat'];
+				$member_address['old_lng'] = $member['old_lng'];
+			}
+
+			// Backwards compatibility for older members that are upgrading.
+			if ( empty( $member_address['optin'] ) && ! empty( $member_address['old_lat' ] ) ) {
+				$member_address['optin'] = true;
+			}
 
 			//If the user has not opted in, we should not display their location on the map.
 			if ( ! $member_address['optin'] ) {
@@ -453,7 +466,7 @@ add_action( 'pmpro_after_checkout', 'pmpromm_after_checkout', 10, 2 );
 
 function pmpromm_update_billing_info( $morder ){
 
-    _deprecated_function( __FUNCTION__, 'TBD' );
+    _deprecated_function( __FUNCTION__, '0.8' );
 
 	global $current_user;
 
@@ -704,8 +717,9 @@ function pmpromm_show_single_map_profile( $pu ){
 	if ( ! empty( $pu->ID ) ) {
 
 		// Check if the user has opted in to show their location on the map, if not let's not show the map.
+		// Check that there is no 'street' value for newer logic, otherwise assume they're on "old" data.
 		$pin_location = get_user_meta( $pu->ID, 'pmpromm_pin_location', true );
-		if ( empty( $pin_location['optin'] ) ) {
+		if ( empty( $pin_location['optin'] ) && ! empty( $pin_location['street'] )  ) {
 			return;
 		}
 
@@ -739,7 +753,7 @@ function pmpromm_show_single_map_profile( $pu ){
 			 * Tweak the map shortcode displayed on the profile page of the Directory & Public Profiles Add On.
 			 * Note: The content of the shortcode is sanitized by the shortcode itself.
 			 * For valid attributes see -
-			 * @since TBD
+			 * @since 0.8
 			 */
 			$map_profile_shortcode = apply_filters( 'pmpromm_single_map_profile_shortcode', '[pmpro_membership_maps]' );
 			echo do_shortcode( $map_profile_shortcode );
@@ -974,7 +988,7 @@ add_action( 'updated_post_meta', 'pmpromm_maybe_strip_shortcode_from_post_meta',
 /**
  * Saves the user's pin location to user meta
  *
- * @since TBD
+ * @since 0.8
  * @param mixed  $user_id User ID but not required
  * @return void
  */
@@ -1036,7 +1050,7 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
 /**
  * Displays the address fields for the user
  *
- * @since TBD
+ * @since 0.8
  * @param mixed  $user_id User ID but not required
  * @param string $layout  Layout type - choice of div or table
  * @return string HTML output
@@ -1067,7 +1081,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
     /**
      * Adds support for the old billing fields
      */
-    if( empty( $pin_location ) ) {
+    if ( empty( $pin_location ) ) {
         //We haven't got saved an address, lets check if there's a valid old address available
         $pmpromm_old_lat = get_user_meta( $user_id, 'pmpro_lat', true );
         $pmpromm_old_lng = get_user_meta( $user_id, 'pmpro_lng', true );
@@ -1203,7 +1217,7 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 /**
  * Displays the address fields for the user on the checkout page
  *
- * @since TBD
+ * @since 0.8
  * @return string HTML output
  */
 function pmpromm_checkout_fields(){
@@ -1214,7 +1228,7 @@ add_action( 'pmpro_checkout_boxes', 'pmpromm_checkout_fields' );
 /**
  * Displays the address fields for the user on the profile page
  *
- * @since TBD
+ * @since 0.8
  * @return string HTML output
  */
 function pmpromm_edit_profile_fields( $current_user ){

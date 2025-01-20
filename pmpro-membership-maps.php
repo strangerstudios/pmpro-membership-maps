@@ -663,7 +663,7 @@ function pmpromm_add_zoom_level_directory_page( $atts ){
 add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_directory_page', 10, 1 );
 
 /**
- * Load the member's single marker when viewing the Membership Directory Profile Page or if a specific `pu` value is set.
+ * Load the member's single marker when viewing the Membership Directory Profile Page.
  */
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ) {
 	global $wp_query, $pmpro_pages;

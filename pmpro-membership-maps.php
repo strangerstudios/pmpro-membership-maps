@@ -662,44 +662,43 @@ function pmpromm_add_zoom_level_directory_page( $atts ){
 }
 add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_directory_page', 10, 1 );
 
-//If we're on the profile page, only show that member's marker
-function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ){
+/**
+ * Load the member's single marker when viewing the Membership Directory Profile Page.
+ */
+function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ) {
+	global $wp_query, $pmpro_pages;
 
-	global $wp_query;
-
-	if( !empty( $wp_query->get( 'pu' ) ) ) {
+	// Get the query parameter value for the profile user or if viewing their own profile get the current user object.
+	$pu = '';
+	if ( ! empty( $wp_query->get( 'pu' ) ) ) {
 		$pu = sanitize_text_field( $wp_query->get( 'pu' ) );
-	} else { 
-		if( !empty( $_REQUEST['pu'] ) ) {
-			$pu = sanitize_text_field( $_REQUEST['pu'] );
-		}
+	} elseif ( ! empty( $_REQUEST['pu'] ) ) { 
+		$pu = sanitize_text_field( $_REQUEST['pu'] );
+	} elseif ( is_page( $pmpro_pages['profile'] ) ) {
+		$pu = wp_get_current_user();
 	}
 
-	if( !empty( $pu ) ){
+	// If no user data is found, let's bail early.
+	if ( empty( $pu ) ) {
+		return $sql_parts;
+	}
 
-	    //Get the profile user - doing this helps when profile's nicenames look like email addresses. This caused issues in the past.
-		if( !empty( $pu ) && is_numeric( $pu ) ) {
-			$pu = get_user_by('id',  $pu );
-		} elseif( !empty( $pu ) ) {
-			$pu = get_user_by('slug',  $pu );
-		} elseif( !empty( $current_user->ID ) ) {
-			$pu = $current_user;
+	// Let's get the WP_User object from the user ID or slug if it's not a WP_User object.
+	if ( ! is_a( $pu, 'WP_User' ) ) {
+		if ( is_numeric( $pu ) ) {
+			$pu = get_user_by( 'id', $pu );
 		} else {
-			$pu = false;		
+			$pu = get_user_by( 'slug', $pu );
 		}
-
-		if( $pu ){
-
-		    $member = sanitize_email( $pu->data->user_email );
-
-			$sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql($member) . "' ) ";
-			
-		}
-
 	}
 
+	// Adjust the SQL data to show only a single marker for the specific member.
+	if ( $pu->ID ) {
+		$member = sanitize_email( $pu->data->user_email );
+		$sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql( $member ) . "' ) ";
+	}
+	
 	return $sql_parts;
-
 }
 add_filter( 'pmpro_membership_maps_sql_parts', 'pmpromm_load_profile_map_marker', 10, 7 );
 

@@ -266,7 +266,7 @@ function pmpromm_build_markers( $members, $marker_attributes ){
 			}
 
 			// Backwards compatibility for older members that are upgrading.
-			if ( empty( $member_address['optin'] ) && ! empty( $member_address['old_lat' ] ) ) {
+			if ( ! isset( $member_address['optin'] ) && ! empty( $member_address['old_lat' ] ) ) {
 				$member_address['optin'] = true;
 			}
 
@@ -1134,8 +1134,8 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 							<select name="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select' ) ); ?>" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpromm_country' ) ); ?>">
 							<?php
 								global $pmpro_countries, $pmpro_default_country;
-								if(!$bcountry) {
-									$bcountry = $pmpro_default_country;
+								if( ! $pmpromm_country) {
+									$pmpromm_country = $pmpro_default_country;
 								}
 								foreach($pmpro_countries as $abbr => $country) { ?>
 									<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $pmpromm_country) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country )?></option>
@@ -1200,8 +1200,8 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
                     <select name="pmpromm_country" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( '', 'bcountry' ) ); ?>">
                         <?php
                             global $pmpro_countries, $pmpro_default_country;
-                            if(!$bcountry) {
-                                $bcountry = $pmpro_default_country;
+                            if( ! $pmpromm_country ) {
+                                $pmpromm_country = $pmpro_default_country;
                             }
                             foreach($pmpro_countries as $abbr => $country) { ?>
                                 <option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $pmpromm_country) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country )?></option>

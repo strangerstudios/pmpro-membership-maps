@@ -701,7 +701,13 @@ add_filter( 'pmpro_membership_maps_sql_parts', 'pmpromm_load_profile_map_marker'
 //Adds the map to the profile page
 function pmpromm_show_single_map_profile( $pu ){
 
-	if( !empty( $pu->ID ) ){
+	if ( ! empty( $pu->ID ) ) {
+
+		// Check if the user has opted in to show their location on the map, if not let's not show the map.
+		$pin_location = get_user_meta( $pu->ID, 'pmpromm_pin_location', true );
+		if ( empty( $pin_location['optin'] ) ) {
+			return;
+		}
 
 		$lat = get_user_meta( $pu->ID, 'pmpro_lat', true );
 		$lng = get_user_meta( $pu->ID, 'pmpro_lng', true );

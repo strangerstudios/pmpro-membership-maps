@@ -729,7 +729,14 @@ function pmpromm_show_single_map_profile( $pu ){
 		}
 
 		if( !empty( $lat ) && !empty( $lng ) ){
-			echo do_shortcode( '[pmpro_membership_maps]' );
+			/**
+			 * Tweak the map shortcode displayed on the profile page of the Directory & Public Profiles Add On.
+			 * Note: The content of the shortcode is sanitized by the shortcode itself.
+			 * For valid attributes see -
+			 * @since TBD
+			 */
+			$map_profile_shortcode = apply_filters( 'pmpromm_single_map_profile_shortcode', '[pmpro_membership_maps]' );
+			echo do_shortcode( $map_profile_shortcode );
 		}
 
 	}

@@ -10,6 +10,8 @@
  * Domain Path: /languages
  */
 
+define( 'PMPROMM_VERSION', '0.8' );
+
 //Includes the Member Edit Map Address Panel
 require_once( plugin_dir_path( __FILE__ ) . 'includes/pmpro-class-member-edit-panel-map-address.php' );
 
@@ -64,9 +66,9 @@ function pmpromm_shortcode( $atts ){
 			preg_replace( "/\s+/", "", str_replace( " ", "", apply_filters( 'pmpromm_map_styles', '', $map_id ) ) )
 		) ), 'https://maps.googleapis.com/maps/api/js' ) );
 
-	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ) );
+	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ), array( 'jquery' ), PMPROMM_VERSION );
 
-	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ) );
+	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ), array(), PMPROMM_VERSION );
 
 	/**
 	 * Setup defaults for the map. We're passing through the map_id attribute
@@ -92,14 +94,14 @@ function pmpromm_shortcode( $atts ){
 
 	wp_enqueue_script( 'pmpro-membership-maps-javascript' );
 
-	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_".$map_id."' style='height: ".$height."px; width: ".$width."%;'>".$notice."</div>";
+	return "<div id='pmpromm_map' class='pmpromm_map pmpro_map_id_" . esc_attr( $map_id ) . "' style='height: " . esc_attr( $height ) . "px; width: " . esc_attr( $width ) . "%;'>" . esc_html( $notice ) . "</div>";
 
 }
 add_shortcode( 'pmpro_membership_maps', 'pmpromm_shortcode' );
 
 /** Enqueue frontend scripts */
 function pmpromm_enqueue_scripts() {
-	wp_enqueue_script( 'pmpro-membership-maps-frontend', plugins_url( 'js/frontend.js', __FILE__ ) );
+	wp_enqueue_script( 'pmpro-membership-maps-frontend', plugins_url( 'js/frontend.js', __FILE__ ), array( 'jquery' ), PMPROMM_VERSION );
 }
 add_action( 'wp_enqueue_scripts', 'pmpromm_enqueue_scripts' );
 

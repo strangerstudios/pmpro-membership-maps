@@ -663,59 +663,43 @@ function pmpromm_add_zoom_level_directory_page( $atts ){
 add_filter( 'pmpro_member_directory_before_atts', 'pmpromm_add_zoom_level_directory_page', 10, 1 );
 
 /**
- * pmpro_membership_maps_sql_parts filter function callback. Let you edit the SQL parts array before the query is run.
- * This one specifically try to determine if should load the map marker for a profile page.
- *
- * @param string $sql_parts The SQL parts array
- * @param array $levels The levels array
- * @param string $s The search string
- * @param string $pn The page number
- * @param int $limit The limit
- * @param int $start The start
- * @param int $end The end
- * @return string The SQL parts array
- * @since TBD
+ * Load the member's single marker when viewing the Membership Directory Profile Page or if a specific `pu` value is set.
  */
 function pmpromm_load_profile_map_marker( $sql_parts, $levels, $s, $pn, $limit, $start, $end ) {
-    global $wp_query, $pmpro_pages;
+	global $wp_query, $pmpro_pages;
 
-    $pu = "";
-    if( !empty( $wp_query->get( 'pu' ) ) ) {
-        $pu = sanitize_text_field( $wp_query->get( 'pu' ) );
-    } else if( !empty( $_REQUEST['pu'] ) ) {
-        $pu = sanitize_text_field( $_REQUEST['pu'] );
-    } else if ( is_page( $pmpro_pages['profile']) ) {
-       $pu = wp_get_current_user();
-    }
+	// Get the query parameter value for the profile user or if viewing their own profile get the current user object.
+	$pu = '';
+	if ( ! empty( $wp_query->get( 'pu' ) ) ) {
+		$pu = sanitize_text_field( $wp_query->get( 'pu' ) );
+	} elseif ( ! empty( $_REQUEST['pu'] ) ) { 
+		$pu = sanitize_text_field( $_REQUEST['pu'] );
+	} elseif ( is_page( $pmpro_pages['profile'] ) ) {
+		$pu = wp_get_current_user();
+	}
 
-	//If we don't have a profile user, return the SQL parts
-    if( empty( $pu ) ) {
-        return $sql_parts;
-    }
+	// If no user data is found, let's bail early.
+	if ( empty( $pu ) ) {
+		return $sql_parts;
+	}
 
-    $user_by_pu = null;
-    //Get the profile user - doing this helps when profile's nicenames look like email addresses. This caused issues in the past.
-    if( is_numeric( $pu ) ) {
-        $user_by_pu = get_user_by('id',  $pu );
-	//determine if it's a wp user object
-	} else if( is_a( $pu, 'WP_User' ) ) {
-		$user_by_pu = $pu;
-	} else {
-        $user_by_pu = get_user_by('slug',  $pu );
-    }
+	// Let's get the WP_User object from the user ID or slug if it's not a WP_User object.
+	if ( ! is_a( $pu, 'WP_User' ) ) {
+		if ( is_numeric( $pu ) ) {
+			$pu = get_user_by( 'id', $pu );
+		} else {
+			$pu = get_user_by( 'slug', $pu );
+		}
+	}
 
-	//If we don't have a user, return the SQL parts
-    if( empty( $user_by_pu ) ) {
-        return $sql_parts;
-    }
-
-    $member = sanitize_email( $user_by_pu->data->user_email );
-    $sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql( $member ) . "' ) ";
-
-    return $sql_parts;
-
+	// Adjust the SQL data to show only a single marker for the specific member.
+	if ( $pu->ID ) {
+		$member = sanitize_email( $pu->data->user_email );
+		$sql_parts['WHERE'] .= " AND ( u.user_email = '" . esc_sql( $member ) . "' ) ";
+	}
+	
+	return $sql_parts;
 }
-
 add_filter( 'pmpro_membership_maps_sql_parts', 'pmpromm_load_profile_map_marker', 10, 7 );
 
 //Adds the map to the profile page

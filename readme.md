@@ -35,3 +35,4 @@ Here are some ways **non-developers can contribute** to the Membership Maps Add 
 
 1. Translate the Membership Maps Add On into your own [language](https://www.paidmembershipspro.com/paid-memberships-pro-in-your-language/).
 2. [Purchase a Plus membership](https://paidmembershipspro.com/pricing) to help fund ongoing development and bug fixes.
+3. Leave an honest review for [Membership Maps](https://www.paidmembershipspro.com/submit-testimonial/).

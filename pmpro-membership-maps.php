@@ -1057,44 +1057,42 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
  */
 function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 
+    $pin_location = $pmpromm_street = $pmpromm_city = $pmpromm_state = $pmpromm_zip = $pmpromm_country = '';
+    $pin_location = $pmpromm_optin = false;
+
     //No user ID provided, lets get the current user
-    if( ! $user_id ) {
-        
-        $user_id = get_current_user_id();
-
-        //Current user isn't logged in for some reason, bail
-        if( ! $user_id ) {
-            return;
-        }
-
+    if( ! $user_id ) {        
+        $user_id = get_current_user_id();        
     }
 
-    $pin_location = get_user_meta( $user_id, 'pmpromm_pin_location', true );
+    if( $user_id ) {
+        $pin_location = get_user_meta( $user_id, 'pmpromm_pin_location', true );
 
-    $pmpromm_street = isset( $pin_location['street'] ) ? $pin_location['street'] : '';
-    $pmpromm_city = isset( $pin_location['city'] ) ? $pin_location['city'] : '';
-    $pmpromm_state = isset( $pin_location['state'] ) ? $pin_location['state'] : '';
-    $pmpromm_zip = isset( $pin_location['zip'] ) ? $pin_location['zip'] : '';
-    $pmpromm_country = isset( $pin_location['country'] ) ? $pin_location['country'] : '';
-    $pmpromm_optin = isset( $pin_location['optin'] ) ? $pin_location['optin'] : false;
+        $pmpromm_street = isset( $pin_location['street'] ) ? $pin_location['street'] : '';
+        $pmpromm_city = isset( $pin_location['city'] ) ? $pin_location['city'] : '';
+        $pmpromm_state = isset( $pin_location['state'] ) ? $pin_location['state'] : '';
+        $pmpromm_zip = isset( $pin_location['zip'] ) ? $pin_location['zip'] : '';
+        $pmpromm_country = isset( $pin_location['country'] ) ? $pin_location['country'] : '';
+        $pmpromm_optin = isset( $pin_location['optin'] ) ? $pin_location['optin'] : false;
 
-    /**
-     * Adds support for the old billing fields
-     */
-    if ( empty( $pin_location ) ) {
-        //We haven't got saved an address, lets check if there's a valid old address available
-        $pmpromm_old_lat = get_user_meta( $user_id, 'pmpro_lat', true );
-        $pmpromm_old_lng = get_user_meta( $user_id, 'pmpro_lng', true );
+        /**
+         * Adds support for the old billing fields
+         */
+        if ( empty( $pin_location ) ) {
+            //We haven't got saved an address, lets check if there's a valid old address available
+            $pmpromm_old_lat = get_user_meta( $user_id, 'pmpro_lat', true );
+            $pmpromm_old_lng = get_user_meta( $user_id, 'pmpro_lng', true );
 
-        if( ! empty( $pmpromm_old_lat ) && ! empty( $pmpromm_old_lng ) ){
-            $pmpromm_street = get_user_meta( $user_id, 'pmpro_baddress1', true ).' '.get_user_meta( $user_id, 'pmpro_baddress2', true );
-            $pmpromm_city = get_user_meta( $user_id, 'pmpro_bcity', true );
-            $pmpromm_state = get_user_meta( $user_id, 'pmpro_bstate', true );
-            $pmpromm_zip = get_user_meta( $user_id, 'pmpro_bzipcode', true );
-            $pmpromm_country = get_user_meta( $user_id, 'pmpro_bcountry', true );
-            $pmpromm_optin = true;
+            if( ! empty( $pmpromm_old_lat ) && ! empty( $pmpromm_old_lng ) ){
+                $pmpromm_street = get_user_meta( $user_id, 'pmpro_baddress1', true ).' '.get_user_meta( $user_id, 'pmpro_baddress2', true );
+                $pmpromm_city = get_user_meta( $user_id, 'pmpro_bcity', true );
+                $pmpromm_state = get_user_meta( $user_id, 'pmpro_bstate', true );
+                $pmpromm_zip = get_user_meta( $user_id, 'pmpro_bzipcode', true );
+                $pmpromm_country = get_user_meta( $user_id, 'pmpro_bcountry', true );
+                $pmpromm_optin = true;
+            }
+            
         }
-        
     }
 
     if( $layout == 'div' ) {

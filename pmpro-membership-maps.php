@@ -140,7 +140,9 @@ function pmpromm_load_marker_data( $levels = false, $marker_attributes = array()
 
 	$sql_parts['LIMIT'] = "LIMIT $start, $limit";
 
-	if( $s ) {
+    //Add support for searches that come from the Member Directory
+	if( ! empty( $_REQUEST['ps'] ) ) {
+        $s = sanitize_text_field( $_REQUEST['ps'] );
 		$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 	}
 

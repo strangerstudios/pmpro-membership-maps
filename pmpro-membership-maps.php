@@ -103,7 +103,7 @@ function pmpromm_enqueue_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'pmpromm_enqueue_scripts' );
 
-function pmpromm_load_marker_data( $levels = false, $marker_attributes = array(), $start = 0, $limit = 100, $s = "", $pn = false, $order_by = false, $order = false, $end = false ){
+function pmpromm_load_marker_data( $levels = false, $marker_attributes = array(), $start = 0, $limit = 100 ){
 	/**
 	 * We're adding in support for $pn, $order_by, $order and $end to allow the pmpro_membership_maps_sql_parts
 	 * to be used in the same function as one would filter the Member Directory filter pmpromm_sql

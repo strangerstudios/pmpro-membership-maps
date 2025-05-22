@@ -62,10 +62,30 @@ function pmpromm_shortcode( $atts ){
 
 	wp_enqueue_script( 'jquery' );
 
-	wp_enqueue_script( 'pmpro-membership-maps-google-maps', add_query_arg( array( 'key' => $api_key, 'libraries' => implode( ",", $libraries ), 'v' => '3', 'style' => trim( 
-			preg_replace( "/\s+/", "", str_replace( " ", "", apply_filters( 'pmpromm_map_styles', '', $map_id ) ) )
-		) ), 'https://maps.googleapis.com/maps/api/js' ) );
+	/**
+	 * Filter map styles
+	 *
+  	 * @param string $styles JSON string of map styles
+	 * @param string $map ID of the current map
+	 */
+	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
 
+	//Remove spaces and new lines from the styles
+	$map_styles = trim( $map_styles );
+	$map_styles = str_replace( " ", "", $map_styles );
+	$map_styles = preg_replace( "/\n+/", "", $map_styles );
+	$map_styles = preg_replace( "/\s+/", "", $map_styles );
+
+    	$query_params = array( 
+		'key' => $api_key,
+		'callback' => 'pmpromm_init_map', 
+		'loading' => 'async', 
+		'libraries' => implode( ",", $libraries ), 
+		'v' => '3', 
+		'style' => $map_styles 
+    	);
+
+	wp_enqueue_script( 'pmpro-membership-maps-google-maps', add_query_arg( $query_params, 'https://maps.googleapis.com/maps/api/js' ), array(), PMPROMM_VERSION, array( 'strategy'  => 'async' ) );
 	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ), array( 'jquery' ), PMPROMM_VERSION );
 
 	wp_enqueue_style( 'pmpro-membership-maps-styling', plugins_url( 'css/user.css', __FILE__ ), array(), PMPROMM_VERSION );
@@ -74,12 +94,6 @@ function pmpromm_shortcode( $atts ){
 	 * Setup defaults for the map. We're passing through the map_id attribute
 	 * to allow developers to differentiate maps. 
 	 */
-
-	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
-	$map_styles = str_replace( " ", "", $map_styles );
-	$map_styles = preg_replace( "/\n+/", "", $map_styles );
-	$map_styles = preg_replace( "/\s+/", "", $map_styles );
-
 	wp_localize_script( 'pmpro-membership-maps-javascript', 'pmpromm_vars', array(
 		'default_start' => apply_filters( 'pmpromm_default_map_start', array( 'lat' => -34.397, 'lng' => 150.644 ), $map_id ),
 		'override_first_marker_location' => apply_filters( 'pmpromm_override_first_marker', '__return_false', $map_id ),

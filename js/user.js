@@ -1,4 +1,4 @@
-jQuery(document).ready(function(){
+function pmpromm_init_map(){
 
 	var pmpromm_map_element = document.getElementById( 'pmpromm_map' );
 
@@ -79,4 +79,4 @@ jQuery(document).ready(function(){
 
 	}
 
-});
+};

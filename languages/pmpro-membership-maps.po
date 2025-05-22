@@ -2,22 +2,23 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Membership Maps Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Membership Maps Add On 0.8\n"
+"Project-Id-Version: Paid Memberships Pro - Membership Maps Add On 0.9\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-20T10:37:58+00:00\n"
+"POT-Creation-Date: 2025-05-22T10:13:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-membership-maps\n"
 
 #: pmpro-membership-maps.php:44
 #: pmpro-membership-maps.php:45
 #: pmpro-membership-maps.php:46
 #: pmpro-membership-maps.php:49
+#: pmpro-membership-maps.php:51
 msgid "This map could not be loaded. Please ensure that you have entered your Google Maps API Key and that there are no JavaScript errors on the page."
 msgstr ""
 
@@ -25,6 +26,7 @@ msgstr ""
 #: pmpro-membership-maps.php:287
 #: pmpro-membership-maps.php:289
 #: pmpro-membership-maps.php:321
+#: pmpro-membership-maps.php:343
 msgid "Email Address"
 msgstr ""
 
@@ -33,6 +35,7 @@ msgstr ""
 #: pmpro-membership-maps.php:303
 #: pmpro-membership-maps.php:305
 #: pmpro-membership-maps.php:337
+#: pmpro-membership-maps.php:359
 msgid "Level"
 msgstr ""
 
@@ -41,6 +44,7 @@ msgstr ""
 #: pmpro-membership-maps.php:326
 #: pmpro-membership-maps.php:328
 #: pmpro-membership-maps.php:360
+#: pmpro-membership-maps.php:382
 msgid "Start Date"
 msgstr ""
 
@@ -49,6 +53,7 @@ msgstr ""
 #: pmpro-membership-maps.php:337
 #: pmpro-membership-maps.php:339
 #: pmpro-membership-maps.php:371
+#: pmpro-membership-maps.php:393
 msgid "View Profile"
 msgstr ""
 
@@ -57,6 +62,7 @@ msgstr ""
 #: pmpro-membership-maps.php:491
 #: pmpro-membership-maps.php:493
 #: pmpro-membership-maps.php:506
+#: pmpro-membership-maps.php:528
 msgid "Google Maps API Key"
 msgstr ""
 
@@ -65,6 +71,7 @@ msgstr ""
 #: pmpro-membership-maps.php:492
 #: pmpro-membership-maps.php:494
 #: pmpro-membership-maps.php:507
+#: pmpro-membership-maps.php:529
 msgid "Used by the Membership Maps Add On."
 msgstr ""
 
@@ -73,6 +80,7 @@ msgstr ""
 #: pmpro-membership-maps.php:497
 #: pmpro-membership-maps.php:499
 #: pmpro-membership-maps.php:512
+#: pmpro-membership-maps.php:534
 msgid "Obtain Your Google Maps API Key"
 msgstr ""
 
@@ -87,6 +95,7 @@ msgstr ""
 #: pmpro-membership-maps.php:595
 #: pmpro-membership-maps.php:597
 #: pmpro-membership-maps.php:610
+#: pmpro-membership-maps.php:632
 msgid "Docs"
 msgstr ""
 
@@ -95,6 +104,7 @@ msgstr ""
 #: pmpro-membership-maps.php:595
 #: pmpro-membership-maps.php:597
 #: pmpro-membership-maps.php:610
+#: pmpro-membership-maps.php:632
 msgid "View Documentation"
 msgstr ""
 
@@ -103,6 +113,7 @@ msgstr ""
 #: pmpro-membership-maps.php:596
 #: pmpro-membership-maps.php:598
 #: pmpro-membership-maps.php:611
+#: pmpro-membership-maps.php:633
 msgid "Support"
 msgstr ""
 
@@ -111,6 +122,7 @@ msgstr ""
 #: pmpro-membership-maps.php:596
 #: pmpro-membership-maps.php:598
 #: pmpro-membership-maps.php:611
+#: pmpro-membership-maps.php:633
 msgid "Visit Customer Support Forum"
 msgstr ""
 
@@ -119,6 +131,7 @@ msgstr ""
 #: pmpro-membership-maps.php:610
 #: pmpro-membership-maps.php:612
 #: pmpro-membership-maps.php:625
+#: pmpro-membership-maps.php:647
 msgid "API Settings"
 msgstr ""
 
@@ -127,6 +140,7 @@ msgstr ""
 #: pmpro-membership-maps.php:610
 #: pmpro-membership-maps.php:612
 #: pmpro-membership-maps.php:625
+#: pmpro-membership-maps.php:647
 msgid "View Settings"
 msgstr ""
 
@@ -135,6 +149,7 @@ msgstr ""
 #: pmpro-membership-maps.php:825
 #: pmpro-membership-maps.php:828
 #: pmpro-membership-maps.php:854
+#: pmpro-membership-maps.php:876
 #, php-format
 msgid "Paid Memberships Pro - Membership Maps: An Error Occurred - %s"
 msgstr ""
@@ -167,51 +182,68 @@ msgstr ""
 #: pmpro-membership-maps.php:300
 #: pmpro-membership-maps.php:302
 #: pmpro-membership-maps.php:334
+#: pmpro-membership-maps.php:356
 msgid "Levels"
 msgstr ""
 
 #: pmpro-membership-maps.php:497
 #: pmpro-membership-maps.php:499
 #: pmpro-membership-maps.php:512
+#: pmpro-membership-maps.php:534
+#, php-format
 msgid "Used by the Membership Maps Add On. %s %s"
 msgstr ""
 
 #: pmpro-membership-maps.php:497
 #: pmpro-membership-maps.php:499
 #: pmpro-membership-maps.php:512
+#: pmpro-membership-maps.php:534
 msgid "API Key Status"
 msgstr ""
 
 #: pmpro-membership-maps.php:1111
 #: pmpro-membership-maps.php:1156
+#: pmpro-membership-maps.php:1128
+#: pmpro-membership-maps.php:1173
 msgid "Show on Membership Map"
 msgstr ""
 
 #: pmpro-membership-maps.php:1117
 #: pmpro-membership-maps.php:1165
+#: pmpro-membership-maps.php:1134
+#: pmpro-membership-maps.php:1182
 msgid "Street Name"
 msgstr ""
 
 #: pmpro-membership-maps.php:1121
 #: pmpro-membership-maps.php:1173
+#: pmpro-membership-maps.php:1138
+#: pmpro-membership-maps.php:1190
 msgid "City"
 msgstr ""
 
 #: pmpro-membership-maps.php:1125
 #: pmpro-membership-maps.php:1181
+#: pmpro-membership-maps.php:1142
+#: pmpro-membership-maps.php:1198
 msgid "State"
 msgstr ""
 
 #: pmpro-membership-maps.php:1129
 #: pmpro-membership-maps.php:1189
+#: pmpro-membership-maps.php:1146
+#: pmpro-membership-maps.php:1206
 msgid "Zip Code"
 msgstr ""
 
 #: pmpro-membership-maps.php:1133
 #: pmpro-membership-maps.php:1197
+#: pmpro-membership-maps.php:1150
+#: pmpro-membership-maps.php:1214
 msgid "Country"
 msgstr ""
 
 #: pmpro-membership-maps.php:1160
+#: pmpro-membership-maps.php:1177
 msgid "Check this box to include your address on the Membership Map. Unchecking this will empty the address fields."
 msgstr ""

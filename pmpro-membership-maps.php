@@ -62,20 +62,28 @@ function pmpromm_shortcode( $atts ){
 
 	wp_enqueue_script( 'jquery' );
 
-    $map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
-    $map_styles = trim( $map_styles );
+	/**
+	 * Filter map styles
+	 *
+  	 * @param string $styles JSON string of map styles
+	 * @param string $map ID of the current map
+	 */
+	$map_styles = apply_filters( 'pmpromm_map_styles', '', $map_id );
+
+	//Remove spaces and new lines from the styles
+	$map_styles = trim( $map_styles );
 	$map_styles = str_replace( " ", "", $map_styles );
 	$map_styles = preg_replace( "/\n+/", "", $map_styles );
 	$map_styles = preg_replace( "/\s+/", "", $map_styles );
 
-    $query_params = array( 
-        'key' => $api_key,
-        'callback' => 'pmpromm_init_map', 
-        'loading' => 'async', 
-        'libraries' => implode( ",", $libraries ), 
-        'v' => '3', 
-        'style' => $map_styles 
-    );
+    	$query_params = array( 
+		'key' => $api_key,
+		'callback' => 'pmpromm_init_map', 
+		'loading' => 'async', 
+		'libraries' => implode( ",", $libraries ), 
+		'v' => '3', 
+		'style' => $map_styles 
+    	);
 
 	wp_enqueue_script( 'pmpro-membership-maps-google-maps', add_query_arg( $query_params, 'https://maps.googleapis.com/maps/api/js' ), array(), PMPROMM_VERSION, array( 'strategy'  => 'async' ) );
 	wp_register_script( 'pmpro-membership-maps-javascript', plugins_url( 'js/user.js', __FILE__ ), array( 'jquery' ), PMPROMM_VERSION );

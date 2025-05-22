@@ -1057,45 +1057,42 @@ function pmpromm_save_pin_location_fields( $user_id = false ) {
  */
 function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 
-    $pin_location = $pmpromm_street = $pmpromm_city = $pmpromm_state = $pmpromm_zip = $pmpromm_country = '';
-    $pin_location = $pmpromm_optin = false;
+	$pin_location = $pmpromm_street = $pmpromm_city = $pmpromm_state = $pmpromm_zip = $pmpromm_country = '';
+	$pmpromm_optin = false;
 
     //No user ID provided, lets get the current user
-    if( ! $user_id ) {        
+    if ( ! $user_id ) {        
         $user_id = get_current_user_id();        
     }
 
-    if( $user_id ) {
+	// Get the meta.
+    if ( $user_id ) {
         $pin_location = get_user_meta( $user_id, 'pmpromm_pin_location', true );
 
-        $pmpromm_street = isset( $pin_location['street'] ) ? $pin_location['street'] : '';
-        $pmpromm_city = isset( $pin_location['city'] ) ? $pin_location['city'] : '';
-        $pmpromm_state = isset( $pin_location['state'] ) ? $pin_location['state'] : '';
-        $pmpromm_zip = isset( $pin_location['zip'] ) ? $pin_location['zip'] : '';
-        $pmpromm_country = isset( $pin_location['country'] ) ? $pin_location['country'] : '';
-        $pmpromm_optin = isset( $pin_location['optin'] ) ? $pin_location['optin'] : false;
-
-        /**
-         * Adds support for the old billing fields
-         */
-        if ( empty( $pin_location ) ) {
-            //We haven't got saved an address, lets check if there's a valid old address available
+        if ( ! empty( $pin_location ) ) {
+            $pmpromm_street = isset( $pin_location['street'] ) ? $pin_location['street'] : '';
+			$pmpromm_city = isset( $pin_location['city'] ) ? $pin_location['city'] : '';
+			$pmpromm_state = isset( $pin_location['state'] ) ? $pin_location['state'] : '';
+			$pmpromm_zip = isset( $pin_location['zip'] ) ? $pin_location['zip'] : '';
+			$pmpromm_country = isset( $pin_location['country'] ) ? $pin_location['country'] : '';
+			$pmpromm_optin = isset( $pin_location['optin'] ) ? $pin_location['optin'] : false;
+        } else {
+			// Add support for older versions of the plugin and default to the old address fields.
             $pmpromm_old_lat = get_user_meta( $user_id, 'pmpro_lat', true );
             $pmpromm_old_lng = get_user_meta( $user_id, 'pmpro_lng', true );
 
-            if( ! empty( $pmpromm_old_lat ) && ! empty( $pmpromm_old_lng ) ){
+            if ( ! empty( $pmpromm_old_lat ) && ! empty( $pmpromm_old_lng ) ) {
                 $pmpromm_street = get_user_meta( $user_id, 'pmpro_baddress1', true ).' '.get_user_meta( $user_id, 'pmpro_baddress2', true );
                 $pmpromm_city = get_user_meta( $user_id, 'pmpro_bcity', true );
                 $pmpromm_state = get_user_meta( $user_id, 'pmpro_bstate', true );
                 $pmpromm_zip = get_user_meta( $user_id, 'pmpro_bzipcode', true );
                 $pmpromm_country = get_user_meta( $user_id, 'pmpro_bcountry', true );
                 $pmpromm_optin = true;
-            }
-            
-        }
+            }   
+		}
     }
 
-    if( $layout == 'div' ) {
+    if ( $layout == 'div' ) {
         ?>
 		<fieldset id="pmpro_membership_maps_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
@@ -1132,11 +1129,11 @@ function pmpromm_show_pin_location_fields( $user_id = false, $layout = 'div' ) {
 							<select name="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select' ) ); ?>" id="pmpromm_country" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpromm_country' ) ); ?>">
 							<?php
 								global $pmpro_countries, $pmpro_default_country;
-								if( ! $pmpromm_country) {
+								if ( ! $pmpromm_country ) {
 									$pmpromm_country = $pmpro_default_country;
 								}
-								foreach($pmpro_countries as $abbr => $country) { ?>
-									<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $pmpromm_country) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country )?></option>
+								foreach ( $pmpro_countries as $abbr => $country ) { ?>
+									<option value="<?php echo esc_attr( $abbr ); ?>" <?php selected( $abbr, $pmpromm_country ); ?>><?php echo esc_html( $country ); ?></option>
 								<?php } ?>
 							</select>
 						</div>

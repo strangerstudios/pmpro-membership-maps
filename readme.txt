@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, map
 Requires at least: 5.2
-Tested up to: 6.7
-Stable tag: 0.8
+Tested up to: 6.8
+Stable tag: 0.9
 
 Display a map of members or for a single member's profile.
 
@@ -43,6 +43,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.9 - 2025-05-22 =
+* ENHANCEMENT: General improvements to loading the JavaScript files and load the files asynchronously. (@andrewlimaza, @JarrydLong)
+* ENHANCEMENT: Improved search support for the Membership Directory and Profiles Add On. The map will now show the marker results from the search results. (@JarrydLong)
+* BUG FIX: Fixed an issue where the Membership Map Address fields would not show for logged-out users during the checkout process. (@JarrydLong)
+
 = 0.8 - 2025-01-20 =
 * SECURITY: General improvements to sanitization and escaping of variables. (@andrewlimaza)
 * ENHANCEMENT: Added improved opt-in functionality for allowing members to opt-in to being displayed on the map for privacy reasons. Backwards compatibility is added for existing members to be opted-in and may opt-out at any time. (@JarrydLong)
